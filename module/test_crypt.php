@@ -20,8 +20,8 @@
 
 namespace tests\module;
 
+use ext\crypt;
 use tests\start;
-use ext\crypt as crypt_ext;
 
 class test_crypt extends start
 {
@@ -30,53 +30,62 @@ class test_crypt extends start
      */
     public static function go(): void
     {
-        echo 'Crypt Test Starts:';
+        echo 'Crypt Tests:';
         echo PHP_EOL;
-        echo 'Make sure to set the right path of "openssl.cnf" in "conf.php"';
+        echo '========================================';
         echo PHP_EOL;
-        echo 'You can provide your own "keygen" class script in "conf.php"';
+        echo 'You can provide your own "keygen" class for "crypt::$keygen"';
         echo PHP_EOL;
+        echo 'Make sure to set the right path of "openssl.cnf" for "crypt::$ssl_conf"';
+        echo PHP_EOL;
+        echo '========================================';
         echo PHP_EOL;
 
-        $string = (string)mt_rand();
+        //Set "openssl.cnf" path
+        crypt::$ssl_conf = 'D:/Programs/WebServer/Programs/PHP/extras/ssl/openssl.cnf';
 
-        $aes_key = forward_static_call([crypt_ext::$keygen, 'create']);
+        //Build rand data string
+        $string = hash('sha256', uniqid(mt_rand(), true));
 
+        //Generate AES key
+        $aes_key = forward_static_call([crypt::$keygen, 'create']);
 
-        $enc = crypt_ext::encrypt($string, $aes_key);
-        $dec = crypt_ext::decrypt($enc, $aes_key);
-        self::chk_eq('encrypt/decrypt', [$string, $dec]);
+        //Test hash_pwd/check_pwd
+        $hash = crypt::hash_pwd($string, $aes_key);
+        $pwd_chk = crypt::check_pwd($string, $aes_key, $hash);
+        self::chk_eq('Crypt hash_pwd/check_pwd', [$pwd_chk, true]);
 
+        //Test encrypt/decrypt
+        $enc = crypt::encrypt($string, $aes_key);
+        $dec = crypt::decrypt($enc, $aes_key);
+        self::chk_eq('Crypt encrypt/decrypt', [$string, $dec]);
 
-        $rsa_key = crypt_ext::rsa_keys();
+        //Generate RSA keys
+        $rsa_key = crypt::rsa_keys();
 
-        $enc = crypt_ext::rsa_encrypt($string, $rsa_key['public']);
-        $dec = crypt_ext::rsa_decrypt($enc, $rsa_key['private']);
-        self::chk_eq('rsa_encrypt(pub)/rsa_decrypt(pri)', [$string, $dec]);
+        //Test rsa_encrypt(public key)/rsa_decrypt(private key)
+        $enc = crypt::rsa_encrypt($string, $rsa_key['public']);
+        $dec = crypt::rsa_decrypt($enc, $rsa_key['private']);
+        self::chk_eq('Crypt encrypt(RSA pub)/decrypt(RSA pri)', [$string, $dec]);
 
+        //Test rsa_encrypt(private key)/rsa_decrypt(public key)
+        $enc = crypt::rsa_encrypt($string, $rsa_key['private']);
+        $dec = crypt::rsa_decrypt($enc, $rsa_key['public']);
+        self::chk_eq('Crypt encrypt(RSA pri)/decrypt(RSA pub)', [$string, $dec]);
 
-        $enc = crypt_ext::rsa_encrypt($string, $rsa_key['private']);
-        $dec = crypt_ext::rsa_decrypt($enc, $rsa_key['public']);
-        self::chk_eq('rsa_encrypt(pri)/rsa_decrypt(pub)', [$string, $dec]);
+        //Test sign/verify
+        $enc = crypt::sign($string);
+        $dec = crypt::verify($enc);
+        self::chk_eq('Crypt sign/verify', [$string, $dec]);
 
+        //Test sign(public key)/verify(private key)
+        $enc = crypt::sign($string, $rsa_key['public']);
+        $dec = crypt::verify($enc, $rsa_key['private']);
+        self::chk_eq('Crypt sign(RSA pub)/verify(RSA pri)', [$string, $dec]);
 
-        $enc = crypt_ext::sign($string);
-        $dec = crypt_ext::verify($enc);
-        self::chk_eq('sign/verify', [$string, $dec]);
-
-
-        $enc = crypt_ext::sign($string, $rsa_key['public']);
-        $dec = crypt_ext::verify($enc, $rsa_key['private']);
-        self::chk_eq('sign(pub)/verify(pri)', [$string, $dec]);
-
-
-        $enc = crypt_ext::sign($string, $rsa_key['private']);
-        $dec = crypt_ext::verify($enc, $rsa_key['public']);
-        self::chk_eq('sign(pri)/verify(pub)', [$string, $dec]);
-
-
-        $hash = crypt_ext::hash_pwd($string, $aes_key);
-        $pwd_chk = crypt_ext::check_pwd($string, $aes_key, $hash);
-        self::chk_eq('hash_pwd/check_pwd', [$pwd_chk, true]);
+        //Test sign(private key)/verify(public key)
+        $enc = crypt::sign($string, $rsa_key['private']);
+        $dec = crypt::verify($enc, $rsa_key['public']);
+        self::chk_eq('Crypt sign(RSA pri)/verify(RSA pub)', [$string, $dec]);
     }
 }

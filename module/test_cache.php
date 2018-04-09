@@ -20,89 +20,187 @@
 
 namespace tests\module;
 
+use ext\redis;
 use tests\start;
 use ext\redis_cache;
 
 class test_cache extends start
 {
     /**
-     * Redis Cache test
+     * Redis Cache tests
      */
     public static function go(): void
     {
-        echo 'Redis Cache Test Starts:';
+        echo 'Redis Cache Tests:';
         echo PHP_EOL;
-        echo 'Make sure to start Redis first!';
-        echo PHP_EOL;
+        echo '========================================';
         echo PHP_EOL;
 
+        //Test Redis
+        try {
+            redis::connect();
+        } catch (\Throwable $exception) {
+            echo 'Redis Connect Failed!';
+            return;
+        }
+
+        //Build rand data
         $data = [
             mt_rand(),
             mt_rand(),
             mt_rand(),
             mt_rand(),
-            mt_rand()
+            mt_rand(),
+            hash('sha256', uniqid(mt_rand(), true)),
+            hash('sha256', uniqid(mt_rand(), true)),
+            hash('sha256', uniqid(mt_rand(), true)),
+            hash('sha256', uniqid(mt_rand(), true)),
+            hash('sha256', uniqid(mt_rand(), true))
         ];
 
+        //========== NO cache name ==========
 
+        //Set cache life
+        redis_cache::$life = 600;
+
+        //Clean cache name
+        redis_cache::$name = null;
+
+        //Delete cache
         redis_cache::del();
 
+        //Test "set"
         $set = redis_cache::set($data);
         self::chk_eq('Cache Set', [$set, true]);
 
-
+        //Test "get"
         $get = redis_cache::get();
         self::chk_eq('Cache Get', [json_encode($get), json_encode($data)]);
 
-
-        redis_cache::$name = 'cache:test_key';
-
+        //Delete cache
         redis_cache::del();
 
-        $set = redis_cache::set($data);
-        self::chk_eq('Cache Set (with key)', [$set, true]);
-
-
+        //Test "get after delete"
         $get = redis_cache::get();
-        self::chk_eq('Cache Get (with key)', [json_encode($get), json_encode($data)]);
+        self::chk_eq('Cache Del->Get', [json_encode($get), json_encode([])]);
 
 
-        redis_cache::del();
-
-        $set = redis_cache::set($data);
-        self::chk_eq('Cache Set', [$set, true]);
-
-        redis_cache::del();
-
-        $get = redis_cache::get();
-        self::chk_eq('Cache Get-Del', [json_encode($get), json_encode([])]);
-
-
-        redis_cache::del();
-
-        $set = redis_cache::set($data);
-        self::chk_eq('Cache Set (with key)', [$set, true]);
-
-        redis_cache::del();
-
-        $get = redis_cache::get();
-        self::chk_eq('Cache Get-Del (with key)', [json_encode($get), json_encode([])]);
-
-
+        //Set cache life
         redis_cache::$life = 0;
+
+        //Clean cache name
         redis_cache::$name = null;
 
+        //Delete cache
         redis_cache::del();
 
+        //Test "set persistent cache"
         $set = redis_cache::set($data);
         self::chk_eq('Cache Set (persistent)', [$set, true]);
 
+        //Test "get persistent cache"
         $get = redis_cache::get();
         self::chk_eq('Cache Get (persistent)', [json_encode($get), json_encode($data)]);
 
+        //Delete cache
         redis_cache::del();
 
+        //Test "get after delete on persistent cache"
         $get = redis_cache::get();
-        self::chk_eq('Cache Get-Del (persistent)', [json_encode($get), json_encode([])]);
+        self::chk_eq('Cache Del->Get (persistent)', [json_encode($get), json_encode([])]);
+
+
+        //Set cache life
+        redis_cache::$life = 1;
+
+        //Clean cache name
+        redis_cache::$name = null;
+
+        //Delete cache
+        redis_cache::del();
+
+        //Test "set cache for 1s"
+        $set = redis_cache::set($data);
+        self::chk_eq('Cache Set (life = 1s)', [$set, true]);
+
+        //Sleep 2s
+        sleep(2);
+
+        //Test "get outdated cache"
+        $get = redis_cache::get();
+        self::chk_eq('Cache Get (outdated)', [json_encode($get), json_encode([])]);
+
+
+        //========== With cache name ==========
+
+        //Set cache life
+        redis_cache::$life = 600;
+
+        //Set cache name
+        redis_cache::$name = 'cache:test';
+
+        //Delete cache with name
+        redis_cache::del();
+
+        //Test "set with name"
+        $set = redis_cache::set($data);
+        self::chk_eq('Cache Set (with name)', [$set, true]);
+
+        //Test "get with name"
+        $get = redis_cache::get();
+        self::chk_eq('Cache Get (with name)', [json_encode($get), json_encode($data)]);
+
+        //Delete cache with name
+        redis_cache::del();
+
+        //Test "get after delete with name"
+        $get = redis_cache::get();
+        self::chk_eq('Cache Del->Get (with name)', [json_encode($get), json_encode([])]);
+
+
+        //Set cache life to persistent
+        redis_cache::$life = 0;
+
+        //Set cache name
+        redis_cache::$name = 'cache:test';
+
+        //Delete cache
+        redis_cache::del();
+
+        //Test "set persistent cache"
+        $set = redis_cache::set($data);
+        self::chk_eq('Cache Set (with name, persistent)', [$set, true]);
+
+        //Test "get persistent cache"
+        $get = redis_cache::get();
+        self::chk_eq('Cache Get (with name, persistent)', [json_encode($get), json_encode($data)]);
+
+        //Delete cache
+        redis_cache::del();
+
+        //Test "get after delete on persistent cache"
+        $get = redis_cache::get();
+        self::chk_eq('Cache Del->Get (with name, persistent)', [json_encode($get), json_encode([])]);
+
+
+        //Set cache life
+        redis_cache::$life = 1;
+
+        //Set cache name
+        redis_cache::$name = 'cache:test';
+
+        //Delete cache
+        redis_cache::del();
+
+        //Test "set cache for 1s"
+        $set = redis_cache::set($data);
+        self::chk_eq('Cache Set (with name, life = 1s)', [$set, true]);
+
+        //Sleep 2s
+        sleep(2);
+
+        //Test "get outdated cache"
+        $get = redis_cache::get();
+        self::chk_eq('Cache Get (with name, outdated)', [json_encode($get), json_encode([])]);
     }
 }

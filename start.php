@@ -74,8 +74,8 @@ class start
             $list = file::get_list(__DIR__ . '/module/', '*.php');
             foreach ($list as $file) router::$data['tests'][] = substr(basename($file), 0, -4);
         } else {
-            if (is_string(router::$data['tests'])) router::$data['tests'] = [router::$data['tests']];
-            if (!is_array(router::$data['tests'])) exit('Wrong Test Params!');
+            router::$data['tests'] = array_keys(router::$data);
+            foreach (router::$data['tests'] as $key => $value) router::$data['tests'][$key] = 'test_' . $value;
         }
     }
 
