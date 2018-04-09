@@ -308,7 +308,6 @@ class test_mpc extends start
         }
 
         self::chk_eq('MPC (100 jobs, 1s * 100 = 100s)', [$pass, true]);
-        echo PHP_EOL;
     }
 
     /**
