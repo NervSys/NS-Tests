@@ -38,7 +38,7 @@ class test_mpc extends start
         echo PHP_EOL;
         echo '========================================';
         echo PHP_EOL;
-        echo 'Make sure to configured [CLI] section in "/core/conf.ini" if needed!';
+        echo 'Make sure to configure [CLI] section in "/core/conf.ini" if needed!';
         echo PHP_EOL;
         echo '========================================';
         echo PHP_EOL;
