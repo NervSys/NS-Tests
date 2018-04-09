@@ -23,7 +23,7 @@ namespace tests\module;
 use tests\start;
 use ext\crypt as crypt_ext;
 
-class crypt extends start
+class test_crypt extends start
 {
     /**
      * Crypt tests

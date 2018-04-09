@@ -89,11 +89,15 @@ class start
         foreach ($tests as $test) {
             try {
                 $space = '\\' . __NAMESPACE__ . '\\module\\' . $test;
-                if (!class_exists($space) || !method_exists($space, 'go')) throw new \Exception('Test Module [' . $space . '] NOT found or ERROR!');
+
+                if (!class_exists($space)) throw new \Exception('Test Module [' . $space . '] NOT found!');
+                if (!method_exists($space, 'go')) throw new \Exception('Test Module [' . $space . '] ERROR!');
+
                 forward_static_call([$space, 'go']);
             } catch (\Throwable $exception) {
                 echo $exception->getMessage();
             }
+
             echo PHP_EOL . PHP_EOL;
         }
     }

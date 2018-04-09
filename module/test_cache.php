@@ -23,7 +23,7 @@ namespace tests\module;
 use tests\start;
 use ext\redis_cache;
 
-class cache extends start
+class test_cache extends start
 {
     /**
      * Redis Cache test
