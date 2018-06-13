@@ -21,7 +21,8 @@
 namespace tests;
 
 use ext\file;
-use core\ctr\router;
+
+use core\pool\process;
 
 class start
 {
@@ -70,12 +71,18 @@ class start
      */
     public static function init(): void
     {
-        if (empty(router::$data)) {
+        if (empty(process::$data)) {
             $list = file::get_list(__DIR__ . '/module/', '*.php');
-            foreach ($list as $file) router::$data['tests'][] = substr(basename($file), 0, -4);
+
+            foreach ($list as $file) {
+                process::$data['tests'][] = substr(basename($file), 0, -4);
+            }
         } else {
-            router::$data['tests'] = array_keys(router::$data);
-            foreach (router::$data['tests'] as $key => $value) router::$data['tests'][$key] = 'test_' . $value;
+            process::$data['tests'] = array_keys(process::$data);
+
+            foreach (process::$data['tests'] as $key => $value) {
+                process::$data['tests'][$key] = 'test_' . $value;
+            }
         }
     }
 
@@ -90,8 +97,13 @@ class start
             try {
                 $space = '\\' . __NAMESPACE__ . '\\module\\' . $test;
 
-                if (!class_exists($space)) throw new \Exception('Test Module [' . $space . '] NOT found!');
-                if (!method_exists($space, 'go')) throw new \Exception('Test Module [' . $space . '] ERROR!');
+                if (!class_exists($space)) {
+                    throw new \Exception('Test Module [' . $space . '] NOT found!');
+                }
+
+                if (!method_exists($space, 'go')) {
+                    throw new \Exception('Test Module [' . $space . '] ERROR!');
+                }
 
                 forward_static_call([$space, 'go']);
             } catch (\Throwable $exception) {

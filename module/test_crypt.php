@@ -42,7 +42,7 @@ class test_crypt extends start
         echo PHP_EOL;
 
         //Set "openssl.cnf" path
-        crypt::$ssl_conf = 'D:/Programs/WebServer/Programs/PHP/extras/ssl/openssl.cnf';
+        crypt::$ssl_conf = 'D:/Programs/WebServer/Program/PHP/extras/ssl/openssl.cnf';
 
         //Build rand data string
         $string = hash('sha256', uniqid(mt_rand(), true));
@@ -51,7 +51,7 @@ class test_crypt extends start
         $aes_key = forward_static_call([crypt::$keygen, 'create']);
 
         //Test hash_pwd/check_pwd
-        $hash = crypt::hash_pwd($string, $aes_key);
+        $hash    = crypt::hash_pwd($string, $aes_key);
         $pwd_chk = crypt::check_pwd($string, $aes_key, $hash);
         self::chk_eq('Crypt hash_pwd/check_pwd', [$pwd_chk, true]);
 

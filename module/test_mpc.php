@@ -320,7 +320,9 @@ class test_mpc extends start
      */
     public static function mpc_process(string $value, int $sleep = 0): string
     {
-        if (0 < $sleep) sleep($sleep);
+        if (0 < $sleep) {
+            sleep($sleep);
+        }
 
         return $value;
     }

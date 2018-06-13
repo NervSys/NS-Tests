@@ -28,7 +28,6 @@ use ext\redis_queue;
 class test_queue extends start
 {
     public static $tz = [
-        'queue_run'     => [],
         'queue_start'   => [],
         'queue_process' => ['value']
     ];
@@ -51,7 +50,7 @@ class test_queue extends start
         mpc::$wait = false;
 
         mpc::begin();
-        mpc::add(strtr(__CLASS__, '\\', '/') . '-queue_start', []);
+        mpc::add(strtr(__CLASS__, '\\', '/') . '-queue_start');
         mpc::commit();
 
 
@@ -59,7 +58,7 @@ class test_queue extends start
         $cmd = strtr(__CLASS__, '\\', '/') . '-queue_process';
 
         //Test "queue rand add"
-        $add = redis_queue::add('test_' . mt_rand(1, 100), ['cmd' => &$cmd, 'value' => true]);
+        $add = redis_queue::add('test_' . mt_rand(1, 100), $cmd, ['cmd' => &$cmd, 'value' => true]);
         self::chk_eq('Queue Add (1 job)', [$add, 1]);
 
 
@@ -75,37 +74,39 @@ class test_queue extends start
         //Get fail count
         $fail_rec = redis_queue::show_fail(0, 1)['len'];
 
-
         //Add fail queue
-        redis_queue::add('test_' . mt_rand(1, 100), ['cmd' => &$cmd, 'value' => false]);
-
+        redis_queue::add('test_' . mt_rand(1, 100), $cmd, ['cmd' => &$cmd, 'value' => false]);
 
         //Sleep for idle time
         sleep(redis_queue::$idle_wait);
 
-
         //Check fail count now
         $fail_now = redis_queue::show_fail(0, 1)['len'];
+
         self::chk_eq('Queue Job Fail (1 fail)', [$fail_now - $fail_rec, 1]);
 
 
         //Test 200 rand jobs
         $left = $jobs = 200;
-        for ($i = 0; $i < $jobs; ++$i) redis_queue::add('test_' . mt_rand(1, 100), ['cmd' => &$cmd, 'value' => true, 'data' => hash('sha256', uniqid(mt_rand(), true))]);
+        for ($i = 0; $i < $jobs; ++$i) redis_queue::add('test_' . mt_rand(1, 100), $cmd, ['cmd' => &$cmd, 'value' => true, 'data' => hash('sha256', uniqid(mt_rand(), true))]);
 
         do {
             //Wait for process
             sleep(redis_queue::$idle_wait);
 
             //Copy left jobs
-            if ($jobs < $left) $left = $jobs;
+            if ($jobs < $left) {
+                $left = $jobs;
+            }
 
             //Read queue list
             $queue = redis_queue::show_queue();
 
             //Count jobs
             $jobs = 0;
-            foreach ($queue as $key => $value) $jobs += redis::connect()->lLen($key);
+            foreach ($queue as $key => $value) {
+                $jobs += redis::connect()->lLen($key);
+            }
         } while (0 < $jobs && $left > $jobs);
 
         self::chk_eq('Queue Process (200 jobs)', [$jobs, 0]);
@@ -113,21 +114,25 @@ class test_queue extends start
 
         //Test 1000 rand jobs
         $left = $jobs = 1000;
-        for ($i = 0; $i < $jobs; ++$i) redis_queue::add('test_' . mt_rand(1, 100), ['cmd' => &$cmd, 'value' => true, 'data' => hash('sha256', uniqid(mt_rand(), true))]);
+        for ($i = 0; $i < $jobs; ++$i) redis_queue::add('test_' . mt_rand(1, 100), $cmd, ['cmd' => &$cmd, 'value' => true, 'data' => hash('sha256', uniqid(mt_rand(), true))]);
 
         do {
             //Wait for process
             sleep(redis_queue::$idle_wait);
 
             //Copy left jobs
-            if ($jobs < $left) $left = $jobs;
+            if ($jobs < $left) {
+                $left = $jobs;
+            }
 
             //Read queue list
             $queue = redis_queue::show_queue();
 
             //Count jobs
             $jobs = 0;
-            foreach ($queue as $key => $value) $jobs += redis::connect()->lLen($key);
+            foreach ($queue as $key => $value) {
+                $jobs += redis::connect()->lLen($key);
+            }
         } while (0 < $jobs && $left > $jobs);
 
         self::chk_eq('Queue Process (1000 jobs)', [$jobs, 0]);
@@ -147,19 +152,8 @@ class test_queue extends start
         //Stop queue process
         redis_queue::stop();
 
-        //Add child process command
-        redis_queue::$cmd = strtr(__CLASS__, '\\', '/') . '-queue_run';
-
         //Start root process
         redis_queue::start();
-    }
-
-    /**
-     * Queue child process
-     */
-    public static function queue_run(): void
-    {
-        redis_queue::run();
     }
 
     /**
