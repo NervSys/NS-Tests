@@ -57,14 +57,13 @@ class test_queue extends start
         //Build queue process function
         $cmd = strtr(__CLASS__, '\\', '/') . '-queue_process';
 
+
         //Test "queue rand add"
         $add = redis_queue::add('test_' . mt_rand(1, 100), $cmd, ['cmd' => &$cmd, 'value' => true]);
         self::chk_eq('Queue Add (1 job)', [$add, 1]);
 
-
         //Sleep for idle time
         sleep(redis_queue::$idle_wait);
-
 
         //Check queue jobs
         $jobs = redis_queue::show_queue();
@@ -82,34 +81,7 @@ class test_queue extends start
 
         //Check fail count now
         $fail_now = redis_queue::show_fail(0, 1)['len'];
-
         self::chk_eq('Queue Job Fail (1 fail)', [$fail_now - $fail_rec, 1]);
-
-
-        //Test 200 rand jobs
-        $left = $jobs = 200;
-        for ($i = 0; $i < $jobs; ++$i) redis_queue::add('test_' . mt_rand(1, 100), $cmd, ['cmd' => &$cmd, 'value' => true, 'data' => hash('sha256', uniqid(mt_rand(), true))]);
-
-        do {
-            //Wait for process
-            sleep(redis_queue::$idle_wait);
-
-            //Copy left jobs
-            if ($jobs < $left) {
-                $left = $jobs;
-            }
-
-            //Read queue list
-            $queue = redis_queue::show_queue();
-
-            //Count jobs
-            $jobs = 0;
-            foreach ($queue as $key => $value) {
-                $jobs += redis::connect()->lLen($key);
-            }
-        } while (0 < $jobs && $left > $jobs);
-
-        self::chk_eq('Queue Process (200 jobs)', [$jobs, 0]);
 
 
         //Test 1000 rand jobs
@@ -136,6 +108,32 @@ class test_queue extends start
         } while (0 < $jobs && $left > $jobs);
 
         self::chk_eq('Queue Process (1000 jobs)', [$jobs, 0]);
+
+
+        //Test 10000 rand jobs
+        $left = $jobs = 10000;
+        for ($i = 0; $i < $jobs; ++$i) redis_queue::add('test_' . mt_rand(1, 100), $cmd, ['cmd' => &$cmd, 'value' => true, 'data' => hash('sha256', uniqid(mt_rand(), true))]);
+
+        do {
+            //Wait for process
+            sleep(redis_queue::$idle_wait);
+
+            //Copy left jobs
+            if ($jobs < $left) {
+                $left = $jobs;
+            }
+
+            //Read queue list
+            $queue = redis_queue::show_queue();
+
+            //Count jobs
+            $jobs = 0;
+            foreach ($queue as $key => $value) {
+                $jobs += redis::connect()->lLen($key);
+            }
+        } while (0 < $jobs && $left > $jobs);
+
+        self::chk_eq('Queue Process (10000 jobs)', [$jobs, 0]);
 
 
         //Stop queue process
