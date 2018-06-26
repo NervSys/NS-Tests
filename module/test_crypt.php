@@ -42,7 +42,7 @@ class test_crypt extends start
         echo PHP_EOL;
 
         //Set "openssl.cnf" path
-        crypt::$ssl_conf = 'D:/Programs/WebServer/Program/PHP/extras/ssl/openssl.cnf';
+        crypt::$ssl_conf = 'D:/Programs/Serv-Me/Program/PHP/extras/ssl/openssl.cnf';
 
         //Build rand data string
         $string = hash('sha256', uniqid(mt_rand(), true));
