@@ -237,4 +237,12 @@ class queue extends base
 
         return $left < $jobs ? $left : $jobs;
     }
+
+    /**
+     * Close queue process
+     */
+    public function __destruct()
+    {
+        $this->queue->close();
+    }
 }
