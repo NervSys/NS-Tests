@@ -66,19 +66,21 @@ class queue extends base
     public function test_add(): void
     {
         $left = $this->queue->add(
-            'test', 'tests/queue-process',
+            'tests/queue-process',
             [
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
                 'bool' => true
-            ]
+            ],
+            'test'
         );
 
         $remain = $this->queue->add(
-            'test', 'tests/queue-process',
+            'tests/queue-process',
             [
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
                 'bool' => true
-            ]
+            ],
+            'test'
         );
 
         self::chk_eq('add 1 job', [$remain - $left, 1]);
@@ -108,11 +110,12 @@ class queue extends base
         $left = $this->queue->show_fail(0, 1);
 
         $this->queue->add(
-            'test' . mt_rand(1, 10), 'tests/queue-process',
+            'tests/queue-process',
             [
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
                 'bool' => false
-            ]
+            ],
+            'test' . mt_rand(1, 10)
         );
 
         while (0 < $this->chk_job()) ;
@@ -132,11 +135,12 @@ class queue extends base
     {
         for ($i = 0; $i < $jobs; ++$i) {
             $this->queue->add(
-                'test' . mt_rand(1, 10), 'tests/queue-process',
+                'tests/queue-process',
                 [
                     'rand' => hash('sha256', uniqid(mt_rand(), true)),
                     'bool' => true
-                ]
+                ],
+                'test' . mt_rand(1, 10)
             );
         }
 
@@ -157,11 +161,12 @@ class queue extends base
     {
         for ($i = 0; $i < $jobs; ++$i) {
             $this->queue->add(
-                'test' . mt_rand(1, 10), 'tests/queue-process',
+                'tests/queue-process',
                 [
                     'rand' => hash('sha256', uniqid(mt_rand(), true)),
                     'bool' => true
-                ]
+                ],
+                'test' . mt_rand(1, 10)
             );
         }
 
@@ -182,11 +187,12 @@ class queue extends base
     {
         for ($i = 0; $i < $jobs; ++$i) {
             $this->queue->add(
-                'test' . mt_rand(1, 10), 'tests/queue-process',
+                'tests/queue-process',
                 [
                     'rand' => hash('sha256', uniqid(mt_rand(), true)),
                     'bool' => true
-                ]
+                ],
+                'test' . mt_rand(1, 10)
             );
         }
 
