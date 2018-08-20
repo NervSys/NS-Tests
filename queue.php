@@ -28,9 +28,8 @@ class queue extends base
 {
     public static $tz = [
         'test_add'       => [],
-        'start_root'     => [],
-        'test_done'      => [],
         'test_fail'      => [],
+        'test_duration'  => [],
         'test_job_100'   => [],
         'test_job_1000'  => [],
         'test_job_10000' => []
@@ -43,6 +42,10 @@ class queue extends base
      */
     public function __construct()
     {
+        //Start root process
+        \ext\mpc::new(1, false)->add('ext/redis_queue-root')->commit();
+
+        //Init queue instance
         $this->queue = redis_queue::new();
     }
 
@@ -65,7 +68,7 @@ class queue extends base
      */
     public function test_add(): void
     {
-        $left = $this->queue->add(
+        $add = $this->queue->add(
             'tests/queue-process',
             [
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
@@ -74,32 +77,7 @@ class queue extends base
             'test'
         );
 
-        $remain = $this->queue->add(
-            'tests/queue-process',
-            [
-                'rand' => hash('sha256', uniqid(mt_rand(), true)),
-                'bool' => true
-            ],
-            'test'
-        );
-
-        self::chk_eq('add 1 job', [$remain - $left, 1]);
-    }
-
-    /**
-     * Start root process
-     */
-    public function start_root(): void
-    {
-        \ext\mpc::new(1, false)->add('ext/redis_queue-root')->commit();
-    }
-
-    /**
-     * Test done init jobs
-     */
-    public function test_done(): void
-    {
-        self::chk_eq('init jobs done', [$this->chk_job(), 0]);
+        self::chk_eq('add 1 job', [$add, 1]);
     }
 
     /**
@@ -115,7 +93,7 @@ class queue extends base
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
                 'bool' => false
             ],
-            'test' . mt_rand(1, 10)
+            'test_' . mt_rand(1, 10)
         );
 
         while (0 < $this->chk_job()) ;
@@ -123,6 +101,34 @@ class queue extends base
         $remain = $this->queue->show_fail(0, 1);
 
         self::chk_eq('add 1 fail job', [$remain['len'] - $left['len'], 1]);
+    }
+
+    /**
+     * Test add 1 job
+     */
+    public function test_duration(): void
+    {
+        $this->queue->add(
+            'tests/queue-process',
+            [
+                'rand' => hash('sha256', uniqid(mt_rand(), true)),
+                'bool' => true
+            ],
+            'duration',
+            60
+        );
+
+        $add = $this->queue->add(
+            'tests/queue-process',
+            [
+                'rand' => hash('sha256', uniqid(mt_rand(), true)),
+                'bool' => true
+            ],
+            'duration',
+            60
+        );
+
+        self::chk_eq('add 1 job in duration', [$add, 0]);
         echo PHP_EOL;
     }
 
@@ -140,7 +146,7 @@ class queue extends base
                     'rand' => hash('sha256', uniqid(mt_rand(), true)),
                     'bool' => true
                 ],
-                'test' . mt_rand(1, 10)
+                'test_' . mt_rand(1, 10)
             );
         }
 
@@ -166,7 +172,7 @@ class queue extends base
                     'rand' => hash('sha256', uniqid(mt_rand(), true)),
                     'bool' => true
                 ],
-                'test' . mt_rand(1, 10)
+                'test_' . mt_rand(1, 10)
             );
         }
 
@@ -192,7 +198,7 @@ class queue extends base
                     'rand' => hash('sha256', uniqid(mt_rand(), true)),
                     'bool' => true
                 ],
-                'test' . mt_rand(1, 10)
+                'test_' . mt_rand(1, 10)
             );
         }
 
@@ -242,13 +248,5 @@ class queue extends base
         } while (0 < $jobs && 0 < $left && $left < $jobs);
 
         return $left < $jobs ? $left : $jobs;
-    }
-
-    /**
-     * Close queue process
-     */
-    public function __destruct()
-    {
-        $this->queue->close();
     }
 }
