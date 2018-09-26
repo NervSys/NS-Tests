@@ -43,7 +43,10 @@ class queue extends base
     public function __construct()
     {
         //Start root process
-        \ext\mpc::new(1, false)->add('ext/redis_queue-root')->commit();
+        \ext\mpc::new()
+            ->config(['runs' => 1, 'wait' => false, 'php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe'])
+            ->add(['cmd' => 'ext/redis_queue-root'])
+            ->commit();
 
         //Init queue instance
         $this->queue = redis_queue::new();
@@ -136,6 +139,8 @@ class queue extends base
      * Test 100 jobs
      *
      * @param int $jobs
+     *
+     * @throws \RedisException
      */
     public function test_job_100(int $jobs = 100): void
     {
@@ -162,6 +167,8 @@ class queue extends base
      * Test 1000 jobs
      *
      * @param int $jobs
+     *
+     * @throws \RedisException
      */
     public function test_job_1000(int $jobs = 1000): void
     {
@@ -188,6 +195,8 @@ class queue extends base
      * Test 10000 jobs
      *
      * @param int $jobs
+     *
+     * @throws \RedisException
      */
     public function test_job_10000(int $jobs = 10000): void
     {
@@ -212,6 +221,7 @@ class queue extends base
 
     /**
      * @return int
+     * @throws \RedisException
      */
     private function chk_job(): int
     {

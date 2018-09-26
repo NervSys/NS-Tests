@@ -42,8 +42,7 @@ class crypt extends base
      */
     public function __construct()
     {
-        $this->crypt = \ext\crypt::new();
-        $this->crypt->conf('D:/Programs/Serv-Me/Program/PHP/extras/ssl/openssl.cnf');
+        $this->crypt = \ext\crypt::new()->config(['conf' => 'D:/Programs/Serv-Me/Program/PHP/extras/ssl/openssl.cnf']);
 
         $this->aes_key  = $this->crypt->get_key();
         $this->rsa_keys = $this->crypt->rsa_keys($this->aes_key);

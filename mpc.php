@@ -70,9 +70,9 @@ class mpc extends base
     {
         $time = microtime(true);
 
-        $mpc = \ext\mpc::new();
+        $mpc = \ext\mpc::new()->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe']);
 
-        $result = $mpc->add($this->child)->data(['value' => $this->item])->commit();
+        $result = $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item]])->commit();
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
         echo PHP_EOL;
@@ -89,11 +89,11 @@ class mpc extends base
 
         $data = [];
         $jobs = 10;
-        $mpc  = \ext\mpc::new();
+        $mpc  = \ext\mpc::new()->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe']);
 
         for ($i = 0; $i < $jobs; ++$i) {
             $data[] = $this->item . $i;
-            $mpc->add($this->child)->data(['value' => $this->item . $i]);
+            $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item . $i]]);
         }
 
         $result = $mpc->commit();
@@ -116,11 +116,11 @@ class mpc extends base
 
         $data = [];
         $jobs = 100;
-        $mpc  = \ext\mpc::new();
+        $mpc  = \ext\mpc::new()->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe']);
 
         for ($i = 0; $i < $jobs; ++$i) {
             $data[] = $this->item . $i;
-            $mpc->add($this->child)->data(['value' => $this->item . $i]);
+            $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item . $i]]);
         }
 
         $result = $mpc->commit();
@@ -141,9 +141,9 @@ class mpc extends base
     {
         $time = microtime(true);
 
-        $mpc = \ext\mpc::new();
+        $mpc = \ext\mpc::new()->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe']);
 
-        $result = $mpc->add($this->child)->data(['value' => $this->item, 'sleep' => 1])->commit();
+        $result = $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item, 'sleep' => 1]])->commit();
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
         echo PHP_EOL;
@@ -160,11 +160,11 @@ class mpc extends base
 
         $data = [];
         $jobs = 10;
-        $mpc  = \ext\mpc::new();
+        $mpc  = \ext\mpc::new()->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe']);
 
         for ($i = 0; $i < $jobs; ++$i) {
             $data[] = $this->item . $i;
-            $mpc->add($this->child)->data(['value' => $this->item . $i, 'sleep' => 1]);
+            $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item . $i, 'sleep' => 1]]);
         }
 
         $result = $mpc->commit();
@@ -187,11 +187,11 @@ class mpc extends base
 
         $data = [];
         $jobs = 100;
-        $mpc  = \ext\mpc::new();
+        $mpc  = \ext\mpc::new()->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe']);
 
         for ($i = 0; $i < $jobs; ++$i) {
             $data[] = $this->item . $i;
-            $mpc->add($this->child)->data(['value' => $this->item . $i, 'sleep' => 1]);
+            $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item . $i, 'sleep' => 1]]);
         }
 
         $result = $mpc->commit();
@@ -214,11 +214,11 @@ class mpc extends base
 
         $data = [];
         $jobs = 1000;
-        $mpc  = \ext\mpc::new(100);
+        $mpc  = \ext\mpc::new()->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe', 'runs' => 100]);
 
         for ($i = 0; $i < $jobs; ++$i) {
             $data[] = $this->item . $i;
-            $mpc->add($this->child)->data(['value' => $this->item . $i, 'sleep' => 1]);
+            $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item . $i, 'sleep' => 1]]);
         }
 
         $result = $mpc->commit();
