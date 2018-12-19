@@ -176,9 +176,6 @@ class mysql extends base
                 parent::chk_eq('check: ' . $i, [$data, null]);
             }
 
-            ksort($data);
-            ksort($test_changes[$id]);
-
             parent::chk_eq('check: ' . $i, [$data, $test_changes[$id]]);
 
             ++$i;

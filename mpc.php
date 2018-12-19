@@ -100,8 +100,6 @@ class mpc extends base
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
-        ksort($result);
-
         echo PHP_EOL;
         self::chk_eq('10 jobs', [array_column($result, 'data'), $data]);
         echo PHP_EOL;
@@ -126,8 +124,6 @@ class mpc extends base
         $result = $mpc->commit();
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
-
-        ksort($result);
 
         echo PHP_EOL;
         self::chk_eq('100 jobs', [array_column($result, 'data'), $data]);
@@ -171,8 +167,6 @@ class mpc extends base
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
-        ksort($result);
-
         echo PHP_EOL;
         self::chk_eq('10 sleep jobs', [array_column($result, 'data'), $data]);
         echo PHP_EOL;
@@ -198,8 +192,6 @@ class mpc extends base
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
-        ksort($result);
-
         echo PHP_EOL;
         self::chk_eq('100 sleep jobs', [array_column($result, 'data'), $data]);
         echo PHP_EOL;
@@ -224,8 +216,6 @@ class mpc extends base
         $result = $mpc->commit();
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
-
-        ksort($result);
 
         echo PHP_EOL;
         self::chk_eq('1000 sleep jobs/100 processes', [array_column($result, 'data'), $data]);

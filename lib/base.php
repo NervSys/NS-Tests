@@ -34,11 +34,21 @@ class base extends factory
     {
         echo get_called_class() . ' [' . $name . ']: ';
 
-        if (is_array($data[0]) || is_object($data[0])) {
+        if (is_object($data[0])) {
+            $data[0] = (array)$data[0];
+        }
+
+        if (is_object($data[1])) {
+            $data[1] = (array)$data[1];
+        }
+
+        if (is_array($data[0])) {
+            ksort($data[0]);
             $data[0] = json_encode($data[0]);
         }
 
-        if (is_array($data[1]) || is_object($data[1])) {
+        if (is_array($data[1])) {
+            ksort($data[1]);
             $data[1] = json_encode($data[1]);
         }
 
