@@ -25,14 +25,14 @@ use tests\lib\base;
 class mpc extends base
 {
     public static $tz = [
-        'child'               => [],
-        'test_job_1'          => [],
-        'test_job_10'         => [],
-        'test_job_100'        => [],
-        'test_job_1s'         => [],
-        'test_job_10s'        => [],
-        'test_job_100s'       => [],
-        'test_job_1000s_100p' => []
+        'child'               => '',
+        'test_job_1'          => '',
+        'test_job_10'         => '',
+        'test_job_100'        => '',
+        'test_job_1s'         => '',
+        'test_job_10s'        => '',
+        'test_job_100s'       => '',
+        'test_job_1000s_100p' => ''
     ];
 
     private $item  = '';

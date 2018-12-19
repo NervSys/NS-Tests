@@ -25,10 +25,10 @@ use tests\lib\base;
 class crypt extends base
 {
     public static $tz = [
-        'test_pwd'       => [],
-        'test_crypt_aes' => [],
-        'test_crypt_rsa' => [],
-        'test_sign'      => []
+        'test_pwd'       => '',
+        'test_crypt_aes' => '',
+        'test_crypt_rsa' => '',
+        'test_sign'      => ''
     ];
 
     private $crypt;

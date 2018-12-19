@@ -27,15 +27,15 @@ use ext\redis_cache;
 class cache extends base
 {
     public static $tz = [
-        'test_set'             => [],
-        'test_get'             => [],
-        'test_del_get'         => [],
-        'test_set_persist'     => [],
-        'test_get_persist'     => [],
-        'test_del_get_persist' => [],
-        'test_set_life'        => [],
-        'test_get_life'        => [],
-        'test_get_life_over'   => []
+        'test_set'             => '',
+        'test_get'             => '',
+        'test_del_get'         => '',
+        'test_set_persist'     => '',
+        'test_get_persist'     => '',
+        'test_del_get_persist' => '',
+        'test_set_life'        => '',
+        'test_get_life'        => '',
+        'test_get_life_over'   => ''
     ];
 
     private $redis_cache;

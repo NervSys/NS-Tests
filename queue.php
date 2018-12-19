@@ -27,12 +27,12 @@ use ext\redis_queue;
 class queue extends base
 {
     public static $tz = [
-        'test_add'       => [],
-        'test_fail'      => [],
-        'test_duration'  => [],
-        'test_job_100'   => [],
-        'test_job_1000'  => [],
-        'test_job_10000' => []
+        'test_add'       => '',
+        'test_fail'      => '',
+        'test_duration'  => '',
+        'test_job_100'   => '',
+        'test_job_1000'  => '',
+        'test_job_10000' => ''
     ];
 
     private $queue;
