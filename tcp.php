@@ -11,23 +11,22 @@ namespace tests;
 use tests\lib\base;
 use ext\socket as sock;
 
-class socket extends base
+class tcp extends base
 {
     public static $tz = 'server,client';
 
     /**
      * Server constructor
-     * php api.php -c="tests/socket-server" -d="run_as=server&address=tcp://0.0.0.0:8000"
+     * php api.php -c="tests/tcp-server" -d="address=tcp://0.0.0.0:8000"
      *
-     * @param string $run_as
      * @param string $address
      *
      * @throws \Exception
      */
-    public function server(string $run_as, string $address): void
+    public function server(string $address): void
     {
         $clients = [];
-        $socket  = sock::new($run_as, $address)->create();
+        $socket  = sock::new(__FUNCTION__, $address)->create();
 
         while (true) {
             $clients = $socket->listen($clients);
@@ -81,16 +80,15 @@ class socket extends base
 
     /**
      * Client constructor
-     * php api.php -c="tests/socket-client" -d="run_as=client&address=tcp://127.0.0.1:8000"
+     * php api.php -c="tests/tcp-client" -d="address=tcp://127.0.0.1:8000"
      *
-     * @param string $run_as
      * @param string $address
      *
      * @throws \Exception
      */
-    public function client(string $run_as, string $address): void
+    public function client(string $address): void
     {
-        $socket = sock::new($run_as, $address)->create();
+        $socket = sock::new(__FUNCTION__, $address)->create();
         $input  = fopen('php://stdin', 'r');
 
         while (true) {
