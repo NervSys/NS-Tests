@@ -1,10 +1,17 @@
 # Nervsys test suites
 
-Extension test suites for Nervsys 7.2.6+
+Extension test suites for Nervsys 7.2.12
+
 
 ## Usage
 
 Please follow [NervSys README](https://github.com/NervSys/NervSys/blob/master/README.md)
+
+
+## Credits
+
+WS Demo: [kristenzz](https://github.com/kristemZZ)  
+
 
 ## Licensing
 
