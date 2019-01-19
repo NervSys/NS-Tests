@@ -35,7 +35,7 @@ class udp extends base
      *
      * @throws \Exception
      */
-    public function server(string $address): void
+    public function server(string $address = 'udp://0.0.0.0:8000'): void
     {
         $clients = [];
         $socket  = sock::new(__FUNCTION__, $address)->create();
@@ -66,7 +66,7 @@ class udp extends base
      *
      * @throws \Exception
      */
-    public function client(string $address): void
+    public function client(string $address = 'udp://127.0.0.1:8000'): void
     {
         $socket = sock::new(__FUNCTION__, $address)->create();
         $input  = fopen('php://stdin', 'r');

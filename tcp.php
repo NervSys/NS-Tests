@@ -35,7 +35,7 @@ class tcp extends base
      *
      * @throws \Exception
      */
-    public function server(string $address): void
+    public function server(string $address = 'tcp://0.0.0.0:8000'): void
     {
         $clients = [];
         $socket  = sock::new(__FUNCTION__, $address)->create();
@@ -98,7 +98,7 @@ class tcp extends base
      *
      * @throws \Exception
      */
-    public function client(string $address): void
+    public function client(string $address = 'tcp://127.0.0.1:8000'): void
     {
         $socket = sock::new(__FUNCTION__, $address)->create();
         $input  = fopen('php://stdin', 'r');
