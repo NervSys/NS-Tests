@@ -53,9 +53,9 @@ class ws extends base
 
                 $msg_len = $socket->read($client, $msg);
 
-                if (0 >= $msg_len) {
+                if (8 >= $msg_len) {
                     $socket->close($client);
-                    unset($full_list[$key]);
+                    unset($full_list[$key], $this->handshake[$key]);
 
                     echo 'Client offline: ' . (int)$client;
                     echo PHP_EOL . PHP_EOL;
@@ -71,7 +71,7 @@ class ws extends base
                         $this->handshake[$key] = true;
                     } else {
                         $socket->close($client);
-                        unset($full_list[$key]);
+                        unset($full_list[$key], $this->handshake[$key]);
 
                         echo 'Handshake failed: ' . (int)$client;
                         echo PHP_EOL . PHP_EOL;

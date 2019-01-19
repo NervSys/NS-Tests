@@ -9,8 +9,9 @@
     <div id="content" style="overflow-y:auto;height:300px;"></div>
     <hr/>
     <div style="height:40px">
-        <input type="text" id="message" style="margin-left:10px;height:25px;width:450px;">
+        <input type="text" id="message" style="margin-left:10px;height:25px;width:418px;">
         <button onclick="sendMessage()" style="height:28px;width:75px;">发送</button>
+        <button onclick="closeWS()" style="height:28px;width:75px;">断开</button>
     </div>
 </div>
 </body>
@@ -31,6 +32,10 @@
             var data = document.getElementById('message').value;
             webSocket.send(data);
             document.getElementById('message').value = '';
+        }
+
+        var closeWS = function () {
+            webSocket.close();
         }
     } else {
         console.log("您的浏览器不支持WebSocket");
