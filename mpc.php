@@ -206,14 +206,14 @@ class mpc extends base
 
         $data = [];
         $jobs = 1000;
-        $mpc  = \ext\mpc::new()->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe', 'runs' => 100]);
+        $mpc  = \ext\mpc::new()->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe']);
 
         for ($i = 0; $i < $jobs; ++$i) {
             $data[] = $this->item . $i;
             $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item . $i, 'sleep' => 1]]);
         }
 
-        $result = $mpc->commit();
+        $result = $mpc->commit(100);
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
