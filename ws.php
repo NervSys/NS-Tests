@@ -44,18 +44,30 @@ class ws extends base
         $socket  = sock::new(__FUNCTION__, $address)->create();
 
         while (true) {
-            $clients = $socket->listen($clients);
+            $read = $socket->listen($clients);
 
-            $full_list = $socket->accept($clients);
+            $socket->accept($read, $clients);
 
-            foreach ($clients as $key => $client) {
+            foreach ($read as $key => $client) {
                 $msg = '';
 
                 $msg_len = $socket->read($client, $msg);
 
-                if (8 >= $msg_len) {
+                if (-1 === $msg_len) {
                     $socket->close($client);
-                    unset($full_list[$key], $this->handshake[$key]);
+                    unset($clients[$key], $this->handshake[$key]);
+
+                    echo 'Client offline: ' . (int)$client;
+                    echo PHP_EOL . PHP_EOL;
+
+                    continue;
+                }
+
+                $codes = $socket->ws_get_codes($msg);
+
+                if (8 === $codes['opcode']) {
+                    $socket->close($client);
+                    unset($clients[$key], $this->handshake[$key]);
 
                     echo 'Client offline: ' . (int)$client;
                     echo PHP_EOL . PHP_EOL;
@@ -71,7 +83,7 @@ class ws extends base
                         $this->handshake[$key] = true;
                     } else {
                         $socket->close($client);
-                        unset($full_list[$key], $this->handshake[$key]);
+                        unset($clients[$key], $this->handshake[$key]);
 
                         echo 'Handshake failed: ' . (int)$client;
                         echo PHP_EOL . PHP_EOL;
@@ -88,13 +100,14 @@ class ws extends base
                 $msg = 'Message Received: ' . $msg;
                 $msg = $socket->ws_encode($msg);
 
-                $send = $socket->send($client, $msg);
-                echo 'Return ' . ($send ? 'Done!' : 'Failed!') . PHP_EOL;
+                //Send to all clients
+                foreach ($clients as $k => $v) {
+                    $send = $socket->send($v, $msg);
+                    echo 'Send to ' . $k . ($send ? ' Done!' : ' Failed!') . PHP_EOL;
+                }
+
                 echo PHP_EOL;
             }
-
-            //Copy clients from full list
-            $clients = $full_list;
         }
 
         $socket->close($socket->source);

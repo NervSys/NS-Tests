@@ -41,11 +41,11 @@ class tcp extends base
         $socket  = sock::new(__FUNCTION__, $address)->create();
 
         while (true) {
-            $clients = $socket->listen($clients);
+            $read = $socket->listen($clients);
 
-            $full_list = $socket->accept($clients);
+            $socket->accept($read, $clients);
 
-            foreach ($clients as $key => $client) {
+            foreach ($read as $key => $client) {
                 $head = $msg = '';
 
                 $head_len = $socket->read($client, $head, 4);
@@ -57,7 +57,7 @@ class tcp extends base
 
                 if ('0000' === $head) {
                     $socket->close($client);
-                    unset($full_list[$key]);
+                    unset($clients[$key]);
 
                     echo 'Client offline: ' . (int)$client;
                     echo PHP_EOL . PHP_EOL;
@@ -69,7 +69,7 @@ class tcp extends base
 
                 if (-1 === $msg_len) {
                     $socket->close($client);
-                    unset($full_list[$key]);
+                    unset($clients[$key]);
 
                     echo 'Client offline: ' . (int)$client;
                     echo PHP_EOL . PHP_EOL;
@@ -82,9 +82,6 @@ class tcp extends base
                 echo 'Length: ' . $msg_len;
                 echo PHP_EOL . PHP_EOL;
             }
-
-            //Copy clients from full list
-            $clients = $full_list;
         }
 
         $socket->close($socket->source);
