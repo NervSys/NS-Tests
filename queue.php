@@ -44,9 +44,9 @@ class queue extends base
     {
         //Start root process
         \ext\mpc::new()
-            ->config(['runs' => 1, 'wait' => false, 'php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe'])
+            ->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe'])
             ->add(['cmd' => 'ext/redis_queue-root'])
-            ->commit();
+            ->commit(1, false);
 
         //Init queue instance
         $this->queue = redis_queue::new();
