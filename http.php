@@ -20,8 +20,8 @@
 
 namespace tests;
 
+use ext\socket;
 use tests\lib\base;
-use ext\socket as sock;
 
 class http extends base
 {
@@ -29,42 +29,34 @@ class http extends base
 
     /**
      * Server constructor
-     * php api.php -c="tests/http-server" -d="address=http://127.0.0.1:80"
+     * php api.php -c="tests/http-server" -d="address=tcp://0.0.0.0:80"
      *
      * @param string $address
-     *
-     * @throws \Exception
      */
-    public function server(string $address): void
+    public function server(string $address = 'tcp://0.0.0.0:80'): void
     {
         $clients = [];
-        $socket  = sock::new(__FUNCTION__, $address)->create();
+        $stream  = socket::new('server')->bind($address)->create();
 
         while (true) {
-            $clients = $socket->listen($clients);
+            $read = $stream->listen($clients);
 
-            $full_list = $socket->accept($clients);
+            $stream->accept($read, $clients);
 
-            foreach ($clients as $key => $client) {
-                $msg = '';
+            foreach ($read as $key => $client) {
+                $msg = $stream->read($client);
 
-                $msg_len = $socket->read($client, $msg);
-
-                echo 'Message: ' . $msg;
+                echo 'Message: ';
+                echo $msg;
                 echo PHP_EOL;
-                echo 'Length: ' . $msg_len;
-                echo PHP_EOL . PHP_EOL;
 
-                $socket->send($client, 'Request Received: ' . PHP_EOL . $msg);
+                $stream->send($client, 'Request Received: ' . PHP_EOL . $msg);
 
-                $socket->close($client);
-                unset($full_list[$key]);
+                $stream->close($client);
+                unset($clients[$key]);
             }
-
-            //Copy clients from full list
-            $clients = $full_list;
         }
 
-        $socket->close($socket->source);
+        $stream->close($stream->source);
     }
 }

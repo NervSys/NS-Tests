@@ -20,42 +20,36 @@
 
 namespace tests;
 
+use ext\socket;
 use tests\lib\base;
-use ext\socket as sock;
 
 class udp extends base
 {
-    public static $tz = 'server,client';
+    public static $tz = 'server,client,broadcast';
 
     /**
      * Server constructor
      * php api.php -c="tests/udp-server" -d="address=udp://0.0.0.0:8000"
      *
      * @param string $address
-     *
-     * @throws \Exception
      */
     public function server(string $address = 'udp://0.0.0.0:8000'): void
     {
         $clients = [];
-        $socket  = sock::new(__FUNCTION__, $address)->create();
+        $stream  = socket::new('server')->bind($address)->create();
 
         while (true) {
-            if (0 === $socket->listen($clients)) {
+            if (0 === $stream->listen($clients)) {
                 continue;
             }
 
-            $msg = '';
-
-            $msg_len = $socket->read($socket->source, $msg);
+            $msg = $stream->read($stream->source);
 
             echo 'Message: ' . $msg;
             echo PHP_EOL;
-            echo 'Length: ' . $msg_len;
-            echo PHP_EOL . PHP_EOL;
         }
 
-        $socket->close($socket->source);
+        $stream->close($stream->source);
     }
 
     /**
@@ -63,22 +57,39 @@ class udp extends base
      * php api.php -c="tests/udp-client" -d="address=udp://127.0.0.1:8000"
      *
      * @param string $address
-     *
-     * @throws \Exception
      */
     public function client(string $address = 'udp://127.0.0.1:8000'): void
     {
-        $socket = sock::new(__FUNCTION__, $address)->create();
+        $stream = socket::new('client')->bind($address)->create();
         $input  = fopen('php://stdin', 'r');
 
         while (true) {
             echo 'Message: ';
-            $data = trim(fgets($input, 65535));
-            $send = $socket->send($socket->source, $data, $socket->host, $socket->port);
+
+            if ('' === $data = trim(fgets($input, 65535))) {
+                continue;
+            }
+
+            $send = $stream->send($stream->source, $data);
 
             echo '"' . $data . '" SEND ' . ($send ? 'Done!' : 'Failed!') . PHP_EOL;
         }
 
-        $socket->close($socket->source);
+        $stream->close($stream->source);
+    }
+
+    /**
+     * Server constructor
+     * php api.php -c="tests/udp-broadcast" -d="udp://255.255.255.255:8000"
+     *
+     * @param string $address
+     */
+    public function broadcast(string $address = 'udp://255.255.255.255:8000'): void
+    {
+        socket::new('broadcast')
+            ->msg('UDP Broadcasting: Hello World!')
+            ->bind($address)
+            ->timeout(2)
+            ->create();
     }
 }

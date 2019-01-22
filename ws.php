@@ -20,8 +20,8 @@
 
 namespace tests;
 
+use ext\socket;
 use tests\lib\base;
-use ext\socket as sock;
 
 class ws extends base
 {
@@ -35,26 +35,22 @@ class ws extends base
      * php api.php -c="tests/ws-server" -d="address=tcp://0.0.0.0:8000"
      *
      * @param string $address
-     *
-     * @throws \Exception
      */
     public function server(string $address = 'tcp://0.0.0.0:8000'): void
     {
         $clients = [];
-        $socket  = sock::new(__FUNCTION__, $address)->create();
+        $stream  = socket::new('server')->bind($address)->create();
 
         while (true) {
-            $read = $socket->listen($clients);
+            $read = $stream->listen($clients);
 
-            $socket->accept($read, $clients);
+            $stream->accept($read, $clients);
 
             foreach ($read as $key => $client) {
-                $msg = '';
+                $msg = $stream->read($client);
 
-                $msg_len = $socket->read($client, $msg);
-
-                if (-1 === $msg_len) {
-                    $socket->close($client);
+                if ('' === $msg) {
+                    $stream->close($client);
                     unset($clients[$key], $this->handshake[$key]);
 
                     echo 'Client offline: ' . (int)$client;
@@ -63,10 +59,10 @@ class ws extends base
                     continue;
                 }
 
-                $codes = $socket->ws_get_codes($msg);
+                $codes = $stream->ws_get_codes($msg);
 
                 if (8 === $codes['opcode']) {
-                    $socket->close($client);
+                    $stream->close($client);
                     unset($clients[$key], $this->handshake[$key]);
 
                     echo 'Client offline: ' . (int)$client;
@@ -76,13 +72,14 @@ class ws extends base
                 }
 
                 if (!isset($this->handshake[$key])) {
-                    $response = $socket->ws_handshake($msg);
-                    $send     = $socket->send($client, $response);
+                    $response = $stream->ws_handshake($msg);
 
-                    if ($send) {
+                    $send = $stream->send($client, $response);
+
+                    if ($send === strlen($response)) {
                         $this->handshake[$key] = true;
                     } else {
-                        $socket->close($client);
+                        $stream->close($client);
                         unset($clients[$key], $this->handshake[$key]);
 
                         echo 'Handshake failed: ' . (int)$client;
@@ -92,24 +89,24 @@ class ws extends base
                     continue;
                 }
 
-                $msg = $socket->ws_decode($msg);
+                $msg = $stream->ws_decode($msg);
 
                 echo 'Message: ' . $msg;
                 echo PHP_EOL;
 
                 $msg = 'Message Received: ' . $msg;
-                $msg = $socket->ws_encode($msg);
+                $msg = $stream->ws_encode($msg);
 
                 //Send to all clients
                 foreach ($clients as $k => $v) {
-                    $send = $socket->send($v, $msg);
-                    echo 'Send to ' . $k . ($send ? ' Done!' : ' Failed!') . PHP_EOL;
+                    $send = $stream->send($v, $msg);
+                    echo 'Send to ' . $k . ($send === strlen($msg) ? ' Done!' : ' Failed!') . PHP_EOL;
                 }
 
                 echo PHP_EOL;
             }
         }
 
-        $socket->close($socket->source);
+        $stream->close($stream->source);
     }
 }
