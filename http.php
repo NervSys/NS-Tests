@@ -25,7 +25,7 @@ use tests\lib\base;
 
 class http extends base
 {
-    public static $tz = 'server,client';
+    public static $tz = 'server';
 
     /**
      * Server constructor

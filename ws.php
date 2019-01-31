@@ -25,7 +25,7 @@ use tests\lib\base;
 
 class ws extends base
 {
-    public static $tz = 'server,client';
+    public static $tz = 'server';
 
     //Client handshake status
     private $handshake = [];

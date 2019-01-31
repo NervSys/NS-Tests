@@ -27,11 +27,11 @@ class mysql extends base
 {
     public static $tz = [
         'insert' => '',
-        'incr'   => '',
-        'update' => '',
-        'select' => '',
-        'check'  => '',
-        'delete' => ''
+        'incr'   => 'test_id',
+        'update' => 'test_id',
+        'select' => 'test_id',
+        'check'  => 'test_changes,test_data',
+        'delete' => 'test_id'
     ];
 
     private $mysql = null;
