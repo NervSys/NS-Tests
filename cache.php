@@ -61,7 +61,7 @@ class cache extends base
             hash('sha256', uniqid(mt_rand(), true))
         ];
 
-        $this->redis_cache = redis_cache::new();
+        $this->redis_cache = redis_cache::new()->connect();
         $this->redis_cache->del($this->cache_key);
     }
 

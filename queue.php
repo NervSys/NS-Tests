@@ -49,7 +49,7 @@ class queue extends base
             ->commit(1, false);
 
         //Init queue instance
-        $this->queue = redis_queue::new();
+        $this->queue = redis_queue::new()->connect();
     }
 
     /**
@@ -131,7 +131,7 @@ class queue extends base
             60
         );
 
-        self::chk_eq('add 1 job in duration', [$add, 0]);
+        self::chk_eq('add 1 job in duration', [$add, -1]);
         echo PHP_EOL;
     }
 
@@ -139,8 +139,6 @@ class queue extends base
      * Test 100 jobs
      *
      * @param int $jobs
-     *
-     * @throws \RedisException
      */
     public function test_job_100(int $jobs = 100): void
     {
@@ -167,8 +165,6 @@ class queue extends base
      * Test 1000 jobs
      *
      * @param int $jobs
-     *
-     * @throws \RedisException
      */
     public function test_job_1000(int $jobs = 1000): void
     {
@@ -195,8 +191,6 @@ class queue extends base
      * Test 10000 jobs
      *
      * @param int $jobs
-     *
-     * @throws \RedisException
      */
     public function test_job_10000(int $jobs = 10000): void
     {
@@ -221,12 +215,9 @@ class queue extends base
 
     /**
      * @return int
-     * @throws \RedisException
      */
     private function chk_job(): int
     {
-        $redis = $this->queue->connect();
-
         do {
             //Jobs
             $jobs = 0;
@@ -236,7 +227,7 @@ class queue extends base
 
             //Count jobs
             foreach ($queue as $key => $item) {
-                $jobs += $redis->lLen($key);
+                $jobs += $this->queue->show_length($key);
             }
 
             if (0 === $jobs) {
@@ -253,7 +244,7 @@ class queue extends base
 
             //Count left jobs
             foreach ($queue as $key => $item) {
-                $left += $redis->lLen($key);
+                $left += $this->queue->show_length($key);
             }
         } while (0 < $jobs && 0 < $left && $left < $jobs);
 
