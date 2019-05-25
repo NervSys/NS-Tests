@@ -18,13 +18,12 @@
  * limitations under the License.
  */
 
-namespace tests;
-
-use tests\lib\base;
+namespace app\tests;
 
 use ext\redis_queue;
+use app\tests\lib\res;
 
-class queue extends base
+class queue extends redis_queue
 {
     public static $tz = [
         'test_add'       => '',
@@ -35,8 +34,6 @@ class queue extends base
         'test_job_10000' => ''
     ];
 
-    private $queue;
-
     /**
      * queue constructor.
      */
@@ -45,11 +42,11 @@ class queue extends base
         //Start root process
         \ext\mpc::new()
             ->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe'])
-            ->add(['cmd' => 'ext/redis_queue-root'])
+            ->add(['cmd' => 'tests/lib/lib_queue-root'])
             ->commit(1, false);
 
         //Init queue instance
-        $this->queue = redis_queue::new()->connect();
+        parent::connect();
     }
 
     /**
@@ -71,7 +68,7 @@ class queue extends base
      */
     public function test_add(): void
     {
-        $add = $this->queue->add(
+        $add = parent::add(
             'tests/queue-process',
             [
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
@@ -80,7 +77,7 @@ class queue extends base
             'test'
         );
 
-        self::chk_eq('add 1 job', [$add, 1]);
+        res::chk_eq('add 1 job', [$add, 1]);
     }
 
     /**
@@ -88,9 +85,9 @@ class queue extends base
      */
     public function test_fail(): void
     {
-        $left = $this->queue->show_fail(0, 1);
+        $left = parent::show_fail(0, 1);
 
-        $this->queue->add(
+        parent::add(
             'tests/queue-process',
             [
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
@@ -101,9 +98,47 @@ class queue extends base
 
         while (0 < $this->chk_job()) ;
 
-        $remain = $this->queue->show_fail(0, 1);
+        $remain = parent::show_fail(0, 1);
 
-        self::chk_eq('add 1 fail job', [$remain['len'] - $left['len'], 1]);
+        res::chk_eq('add 1 fail job', [$remain['len'] - $left['len'], 1]);
+    }
+
+    /**
+     * @return int
+     */
+    private function chk_job(): int
+    {
+        do {
+            //Jobs
+            $jobs = 0;
+
+            //Read queue list
+            $queue = parent::show_queue();
+
+            //Count jobs
+            foreach ($queue as $key => $item) {
+                $jobs += parent::show_length($key);
+            }
+
+            if (0 === $jobs) {
+                return 0;
+            }
+
+            sleep(ceil(log1p($jobs + 1)));
+
+            //Left jobs
+            $left = 0;
+
+            //Read queue list
+            $queue = parent::show_queue();
+
+            //Count left jobs
+            foreach ($queue as $key => $item) {
+                $left += parent::show_length($key);
+            }
+        } while (0 < $jobs && 0 < $left && $left < $jobs);
+
+        return $left < $jobs ? $left : $jobs;
     }
 
     /**
@@ -111,7 +146,7 @@ class queue extends base
      */
     public function test_duration(): void
     {
-        $this->queue->add(
+        parent::add(
             'tests/queue-process',
             [
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
@@ -121,7 +156,7 @@ class queue extends base
             60
         );
 
-        $add = $this->queue->add(
+        $add = parent::add(
             'tests/queue-process',
             [
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
@@ -131,7 +166,7 @@ class queue extends base
             60
         );
 
-        self::chk_eq('add 1 job in duration', [$add, -1]);
+        res::chk_eq('add 1 job in duration', [$add, -1]);
         echo PHP_EOL;
     }
 
@@ -143,7 +178,7 @@ class queue extends base
     public function test_job_100(int $jobs = 100): void
     {
         for ($i = 0; $i < $jobs; ++$i) {
-            $this->queue->add(
+            parent::add(
                 'tests/queue-process',
                 [
                     'rand' => hash('sha256', uniqid(mt_rand(), true)),
@@ -155,7 +190,7 @@ class queue extends base
 
         $time = microtime(true);
 
-        self::chk_eq($jobs . ' jobs done', [$this->chk_job(), 0]);
+        res::chk_eq($jobs . ' jobs done', [$this->chk_job(), 0]);
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
         echo PHP_EOL;
         echo PHP_EOL;
@@ -169,7 +204,7 @@ class queue extends base
     public function test_job_1000(int $jobs = 1000): void
     {
         for ($i = 0; $i < $jobs; ++$i) {
-            $this->queue->add(
+            parent::add(
                 'tests/queue-process',
                 [
                     'rand' => hash('sha256', uniqid(mt_rand(), true)),
@@ -181,7 +216,7 @@ class queue extends base
 
         $time = microtime(true);
 
-        self::chk_eq($jobs . ' jobs done', [$this->chk_job(), 0]);
+        res::chk_eq($jobs . ' jobs done', [$this->chk_job(), 0]);
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
         echo PHP_EOL;
         echo PHP_EOL;
@@ -195,7 +230,7 @@ class queue extends base
     public function test_job_10000(int $jobs = 10000): void
     {
         for ($i = 0; $i < $jobs; ++$i) {
-            $this->queue->add(
+            parent::add(
                 'tests/queue-process',
                 [
                     'rand' => hash('sha256', uniqid(mt_rand(), true)),
@@ -207,47 +242,9 @@ class queue extends base
 
         $time = microtime(true);
 
-        self::chk_eq($jobs . ' jobs done', [$this->chk_job(), 0]);
+        res::chk_eq($jobs . ' jobs done', [$this->chk_job(), 0]);
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
         echo PHP_EOL;
         echo PHP_EOL;
-    }
-
-    /**
-     * @return int
-     */
-    private function chk_job(): int
-    {
-        do {
-            //Jobs
-            $jobs = 0;
-
-            //Read queue list
-            $queue = $this->queue->show_queue();
-
-            //Count jobs
-            foreach ($queue as $key => $item) {
-                $jobs += $this->queue->show_length($key);
-            }
-
-            if (0 === $jobs) {
-                return 0;
-            }
-
-            sleep(ceil(log1p($jobs + 1)));
-
-            //Left jobs
-            $left = 0;
-
-            //Read queue list
-            $queue = $this->queue->show_queue();
-
-            //Count left jobs
-            foreach ($queue as $key => $item) {
-                $left += $this->queue->show_length($key);
-            }
-        } while (0 < $jobs && 0 < $left && $left < $jobs);
-
-        return $left < $jobs ? $left : $jobs;
     }
 }

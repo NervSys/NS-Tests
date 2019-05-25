@@ -18,11 +18,12 @@
  * limitations under the License.
  */
 
-namespace tests;
+namespace app\tests;
 
-use tests\lib\base;
+use app\tests\lib\res;
+use ext\mpc AS base_mpc;
 
-class mpc extends base
+class mpc extends base_mpc
 {
     public static $tz = [
         'child'               => '',
@@ -37,6 +38,8 @@ class mpc extends base
 
     private $item  = '';
     private $child = 'tests/mpc-child';
+
+    const PHP_EXE = 'D:/Programs/Serv-Me/Program/PHP/php.exe';
 
     /**
      * mpc constructor.
@@ -70,13 +73,13 @@ class mpc extends base
     {
         $time = microtime(true);
 
-        $mpc = \ext\mpc::new()->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe']);
+        $mpc = parent::config(['php_exe' => self::PHP_EXE]);
 
         $result = $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item]])->commit();
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
         echo PHP_EOL;
-        self::chk_eq('1 job', [$result[0]['data'], $this->item]);
+        res::chk_eq('1 job', [$result[0]['data'], $this->item]);
         echo PHP_EOL;
     }
 
@@ -89,7 +92,7 @@ class mpc extends base
 
         $data = [];
         $jobs = 10;
-        $mpc  = \ext\mpc::new()->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe']);
+        $mpc  = parent::config(['php_exe' => self::PHP_EXE]);
 
         for ($i = 0; $i < $jobs; ++$i) {
             $data[] = $this->item . $i;
@@ -101,7 +104,7 @@ class mpc extends base
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
         echo PHP_EOL;
-        self::chk_eq('10 jobs', [array_column($result, 'data'), $data]);
+        res::chk_eq('10 jobs', [array_column($result, 'data'), $data]);
         echo PHP_EOL;
     }
 
@@ -114,7 +117,7 @@ class mpc extends base
 
         $data = [];
         $jobs = 100;
-        $mpc  = \ext\mpc::new()->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe']);
+        $mpc  = parent::config(['php_exe' => self::PHP_EXE]);
 
         for ($i = 0; $i < $jobs; ++$i) {
             $data[] = $this->item . $i;
@@ -126,7 +129,7 @@ class mpc extends base
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
         echo PHP_EOL;
-        self::chk_eq('100 jobs', [array_column($result, 'data'), $data]);
+        res::chk_eq('100 jobs', [array_column($result, 'data'), $data]);
         echo PHP_EOL;
     }
 
@@ -137,13 +140,13 @@ class mpc extends base
     {
         $time = microtime(true);
 
-        $mpc = \ext\mpc::new()->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe']);
+        $mpc = parent::config(['php_exe' => self::PHP_EXE]);
 
         $result = $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item, 'sleep' => 1]])->commit();
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
         echo PHP_EOL;
-        self::chk_eq('1 sleep job', [$result[0]['data'], $this->item]);
+        res::chk_eq('1 sleep job', [$result[0]['data'], $this->item]);
         echo PHP_EOL;
     }
 
@@ -156,7 +159,7 @@ class mpc extends base
 
         $data = [];
         $jobs = 10;
-        $mpc  = \ext\mpc::new()->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe']);
+        $mpc  = parent::config(['php_exe' => self::PHP_EXE]);
 
         for ($i = 0; $i < $jobs; ++$i) {
             $data[] = $this->item . $i;
@@ -168,7 +171,7 @@ class mpc extends base
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
         echo PHP_EOL;
-        self::chk_eq('10 sleep jobs', [array_column($result, 'data'), $data]);
+        res::chk_eq('10 sleep jobs', [array_column($result, 'data'), $data]);
         echo PHP_EOL;
     }
 
@@ -181,7 +184,7 @@ class mpc extends base
 
         $data = [];
         $jobs = 100;
-        $mpc  = \ext\mpc::new()->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe']);
+        $mpc  = parent::config(['php_exe' => self::PHP_EXE]);
 
         for ($i = 0; $i < $jobs; ++$i) {
             $data[] = $this->item . $i;
@@ -193,7 +196,7 @@ class mpc extends base
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
         echo PHP_EOL;
-        self::chk_eq('100 sleep jobs', [array_column($result, 'data'), $data]);
+        res::chk_eq('100 sleep jobs', [array_column($result, 'data'), $data]);
         echo PHP_EOL;
     }
 
@@ -206,7 +209,7 @@ class mpc extends base
 
         $data = [];
         $jobs = 1000;
-        $mpc  = \ext\mpc::new()->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe']);
+        $mpc  = parent::config(['php_exe' => self::PHP_EXE]);
 
         for ($i = 0; $i < $jobs; ++$i) {
             $data[] = $this->item . $i;
@@ -218,7 +221,7 @@ class mpc extends base
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
         echo PHP_EOL;
-        self::chk_eq('1000 sleep jobs/100 processes', [array_column($result, 'data'), $data]);
+        res::chk_eq('1000 sleep jobs/100 processes', [array_column($result, 'data'), $data]);
         echo PHP_EOL;
     }
 }

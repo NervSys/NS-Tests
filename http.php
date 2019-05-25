@@ -18,12 +18,11 @@
  * limitations under the License.
  */
 
-namespace tests;
+namespace app\tests;
 
 use ext\socket;
-use tests\lib\base;
 
-class http extends base
+class http
 {
     public static $tz = 'server';
 

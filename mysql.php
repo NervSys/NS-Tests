@@ -18,12 +18,13 @@
  * limitations under the License.
  */
 
-namespace tests;
+namespace app\tests;
 
 use ext\pdo_mysql;
-use tests\lib\base;
+use app\tests\lib\res;
+use core\handler\factory;
 
-class mysql extends base
+class mysql extends factory
 {
     public static $tz = [
         'insert' => '',
@@ -77,7 +78,7 @@ class mysql extends base
             ];
 
             $res = $this->mysql->insert('ns_test')->value($data)->execute();
-            parent::chk_eq('insert: ' . $i, [$res, true]);
+            res::chk_eq('insert: ' . $i, [$res, true]);
         }
 
         parent::$data['test_id'] = &$test_id;
@@ -97,7 +98,7 @@ class mysql extends base
             $where = [['test_id', $id]];
 
             $res = $this->mysql->update('ns_test')->incr($data)->where($where)->execute();
-            parent::chk_eq('update: ' . $i, [$res, true]);
+            res::chk_eq('update: ' . $i, [$res, true]);
 
             ++$i;
         }
@@ -133,7 +134,7 @@ class mysql extends base
             $where = [['test_id', $id]];
 
             $res = $this->mysql->update('ns_test')->value($data)->where($where)->execute();
-            parent::chk_eq('update: ' . $i, [$res, true]);
+            res::chk_eq('update: ' . $i, [$res, true]);
 
             ++$i;
         }
@@ -155,7 +156,7 @@ class mysql extends base
             ->order(['test_time' => 'ASC'])
             ->fetch();
 
-        parent::chk_eq('select', [count($res), count($test_id)]);
+        res::chk_eq('select', [count($res), count($test_id)]);
     }
 
     /**
@@ -173,10 +174,10 @@ class mysql extends base
             unset($data['test_id']);
 
             if (!isset($test_changes[$id])) {
-                parent::chk_eq('check: ' . $i, [$data, null]);
+                res::chk_eq('check: ' . $i, [$data, null]);
             }
 
-            parent::chk_eq('check: ' . $i, [$data, $test_changes[$id]]);
+            res::chk_eq('check: ' . $i, [$data, $test_changes[$id]]);
 
             ++$i;
         }
@@ -194,7 +195,7 @@ class mysql extends base
             ->where([['test_id', 'IN', $test_id]])
             ->execute();
 
-        parent::chk_eq('delete', [$res, true]);
+        res::chk_eq('delete', [$res, true]);
     }
 
     /**

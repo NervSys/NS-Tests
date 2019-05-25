@@ -18,11 +18,9 @@
  * limitations under the License.
  */
 
-namespace tests\lib;
+namespace app\tests\lib;
 
-use core\handler\factory;
-
-class base extends factory
+class res
 {
     /**
      * Check data equality
@@ -30,7 +28,7 @@ class base extends factory
      * @param string $name
      * @param array  $data
      */
-    protected static function chk_eq(string $name, array $data): void
+    public static function chk_eq(string $name, array $data): void
     {
         echo get_called_class() . ' [' . $name . ']: ';
 
@@ -65,7 +63,7 @@ class base extends factory
      * @param string $name
      * @param array  $data
      */
-    protected static function chk_gt(string $name, array $data): void
+    public static function chk_gt(string $name, array $data): void
     {
         echo get_called_class() . ' [' . $name . ']: ';
 
@@ -82,7 +80,7 @@ class base extends factory
      * @param string $name
      * @param array  $data
      */
-    protected static function chk_lt(string $name, array $data): void
+    public static function chk_lt(string $name, array $data): void
     {
         echo get_called_class() . ' [' . $name . ']: ';
 

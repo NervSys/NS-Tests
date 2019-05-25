@@ -18,13 +18,12 @@
  * limitations under the License.
  */
 
-namespace tests;
-
-use tests\lib\base;
+namespace app\tests;
 
 use ext\redis_cache;
+use app\tests\lib\res;
 
-class cache extends base
+class cache extends redis_cache
 {
     public static $tz = [
         'test_set'             => '',
@@ -61,7 +60,7 @@ class cache extends base
             hash('sha256', uniqid(mt_rand(), true))
         ];
 
-        $this->redis_cache = redis_cache::new()->connect();
+        $this->redis_cache = parent::connect();
         $this->redis_cache->del($this->cache_key);
     }
 
@@ -71,7 +70,7 @@ class cache extends base
     public function test_set(): void
     {
         $set = $this->redis_cache->set($this->cache_key, $this->cache_data, 600);
-        self::chk_eq('set', [$set, true]);
+        res::chk_eq('set', [$set, true]);
     }
 
     /**
@@ -80,7 +79,7 @@ class cache extends base
     public function test_get(): void
     {
         $get = $this->redis_cache->get($this->cache_key);
-        self::chk_eq('get', [$get, $this->cache_data]);
+        res::chk_eq('get', [$get, $this->cache_data]);
     }
 
     /**
@@ -91,7 +90,7 @@ class cache extends base
         $this->redis_cache->del($this->cache_key);
 
         $get = $this->redis_cache->get($this->cache_key);
-        self::chk_eq('del_get', [$get, []]);
+        res::chk_eq('del_get', [$get, []]);
     }
 
     /**
@@ -100,7 +99,7 @@ class cache extends base
     public function test_set_persist(): void
     {
         $set = $this->redis_cache->set($this->cache_key, $this->cache_data, 0);
-        self::chk_eq('set_persist', [$set, true]);
+        res::chk_eq('set_persist', [$set, true]);
     }
 
     /**
@@ -109,7 +108,7 @@ class cache extends base
     public function test_get_persist(): void
     {
         $get = $this->redis_cache->get($this->cache_key);
-        self::chk_eq('get_persist', [$get, $this->cache_data]);
+        res::chk_eq('get_persist', [$get, $this->cache_data]);
     }
 
     /**
@@ -120,7 +119,7 @@ class cache extends base
         $this->redis_cache->del($this->cache_key);
 
         $get = $this->redis_cache->get($this->cache_key);
-        self::chk_eq('del_get_persist', [$get, []]);
+        res::chk_eq('del_get_persist', [$get, []]);
     }
 
     /**
@@ -129,7 +128,7 @@ class cache extends base
     public function test_set_life(): void
     {
         $set = $this->redis_cache->set($this->cache_key, $this->cache_data, 3);
-        self::chk_eq('set_life', [$set, true]);
+        res::chk_eq('set_life', [$set, true]);
     }
 
     /**
@@ -138,7 +137,7 @@ class cache extends base
     public function test_get_life(): void
     {
         $get = $this->redis_cache->get($this->cache_key);
-        self::chk_eq('get_life', [$get, $this->cache_data]);
+        res::chk_eq('get_life', [$get, $this->cache_data]);
     }
 
     /**
@@ -149,6 +148,6 @@ class cache extends base
         sleep(3);
 
         $get = $this->redis_cache->get($this->cache_key);
-        self::chk_eq('get_life_over', [$get, []]);
+        res::chk_eq('get_life_over', [$get, []]);
     }
 }

@@ -18,12 +18,11 @@
  * limitations under the License.
  */
 
-namespace tests;
+namespace app\tests;
 
 use ext\socket;
-use tests\lib\base;
 
-class udp extends base
+class udp
 {
     public static $tz = 'server,client,broadcast';
 
