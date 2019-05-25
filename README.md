@@ -5,7 +5,9 @@ Extension test suites for Nervsys 7.2.20
 
 ## Usage
 
-Please follow [NervSys README](https://github.com/NervSys/NervSys/blob/master/README.md)
+1. Follow [NervSys README](https://github.com/NervSys/NervSys/blob/master/README.md)  
+2. Clone test suits under the default "app_path" value (namespace specified to "app\tests")  
+3. Using CLI mode, enter cmd like: "php api.php tests/cache" to run cache tests. So as other tests.  
 
 
 ## Credits
