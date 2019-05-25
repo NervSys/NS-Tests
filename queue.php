@@ -34,15 +34,20 @@ class queue extends redis_queue
         'test_job_10000' => ''
     ];
 
+    private $process  = 'app/tests/queue-process';
+    private $root_cmd = 'app/tests/lib/lib_queue-root';
+
     /**
      * queue constructor.
      */
     public function __construct()
     {
+        $this->process = parent::get_app_cmd($this->process);
+
         //Start root process
         \ext\mpc::new()
             ->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe'])
-            ->add(['cmd' => 'tests/lib/lib_queue-root'])
+            ->add(['cmd' => parent::get_app_cmd($this->root_cmd)])
             ->commit(1, false);
 
         //Init queue instance
@@ -69,7 +74,7 @@ class queue extends redis_queue
     public function test_add(): void
     {
         $add = parent::add(
-            'tests/queue-process',
+            $this->process,
             [
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
                 'bool' => true
@@ -88,7 +93,7 @@ class queue extends redis_queue
         $left = parent::show_fail(0, 1);
 
         parent::add(
-            'tests/queue-process',
+            $this->process,
             [
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
                 'bool' => false
@@ -147,7 +152,7 @@ class queue extends redis_queue
     public function test_duration(): void
     {
         parent::add(
-            'tests/queue-process',
+            $this->process,
             [
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
                 'bool' => true
@@ -157,7 +162,7 @@ class queue extends redis_queue
         );
 
         $add = parent::add(
-            'tests/queue-process',
+            $this->process,
             [
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
                 'bool' => true
@@ -179,7 +184,7 @@ class queue extends redis_queue
     {
         for ($i = 0; $i < $jobs; ++$i) {
             parent::add(
-                'tests/queue-process',
+                $this->process,
                 [
                     'rand' => hash('sha256', uniqid(mt_rand(), true)),
                     'bool' => true
@@ -205,7 +210,7 @@ class queue extends redis_queue
     {
         for ($i = 0; $i < $jobs; ++$i) {
             parent::add(
-                'tests/queue-process',
+                $this->process,
                 [
                     'rand' => hash('sha256', uniqid(mt_rand(), true)),
                     'bool' => true
@@ -231,7 +236,7 @@ class queue extends redis_queue
     {
         for ($i = 0; $i < $jobs; ++$i) {
             parent::add(
-                'tests/queue-process',
+                $this->process,
                 [
                     'rand' => hash('sha256', uniqid(mt_rand(), true)),
                     'bool' => true

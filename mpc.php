@@ -37,7 +37,7 @@ class mpc extends base_mpc
     ];
 
     private $item  = '';
-    private $child = 'tests/mpc-child';
+    private $child = 'app/tests/mpc-child';
 
     const PHP_EXE = 'D:/Programs/Serv-Me/Program/PHP/php.exe';
 
@@ -46,7 +46,8 @@ class mpc extends base_mpc
      */
     public function __construct()
     {
-        $this->item = hash('sha256', uniqid(mt_rand(), true));
+        $this->child = parent::get_app_cmd($this->child);
+        $this->item  = hash('sha256', uniqid(mt_rand(), true));
     }
 
     /**
