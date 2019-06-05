@@ -14,4 +14,14 @@ use ext\redis_queue;
 class lib_queue extends redis_queue
 {
     public $tz = 'root,child';
+
+    /**
+     * lib_queue constructor.
+     *
+     * @throws \RedisException
+     */
+    public function __construct()
+    {
+        $this->connect();
+    }
 }

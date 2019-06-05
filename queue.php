@@ -42,16 +42,16 @@ class queue extends redis_queue
      */
     public function __construct()
     {
-        $this->process = parent::get_app_cmd($this->process);
+        $this->process = $this->get_app_cmd($this->process);
 
         //Start root process
         \ext\mpc::new()
             ->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe'])
-            ->add(['cmd' => parent::get_app_cmd($this->root_cmd)])
+            ->add(['cmd' => $this->get_app_cmd($this->root_cmd)])
             ->commit(1, false);
 
         //Init queue instance
-        parent::connect();
+        $this->connect();
     }
 
     /**
@@ -73,7 +73,7 @@ class queue extends redis_queue
      */
     public function test_add(): void
     {
-        $add = parent::add(
+        $add = $this->add(
             $this->process,
             [
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
@@ -90,9 +90,9 @@ class queue extends redis_queue
      */
     public function test_fail(): void
     {
-        $left = parent::show_fail(0, 1);
+        $left = $this->show_fail(0, 1);
 
-        parent::add(
+        $this->add(
             $this->process,
             [
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
@@ -103,7 +103,7 @@ class queue extends redis_queue
 
         while (0 < $this->chk_job()) ;
 
-        $remain = parent::show_fail(0, 1);
+        $remain = $this->show_fail(0, 1);
 
         res::chk_eq('add 1 fail job', [$remain['len'] - $left['len'], 1]);
     }
@@ -118,11 +118,11 @@ class queue extends redis_queue
             $jobs = 0;
 
             //Read queue list
-            $queue = parent::show_queue();
+            $queue = $this->show_queue();
 
             //Count jobs
             foreach ($queue as $key => $item) {
-                $jobs += parent::show_length($key);
+                $jobs += $this->show_length($key);
             }
 
             if (0 === $jobs) {
@@ -135,11 +135,11 @@ class queue extends redis_queue
             $left = 0;
 
             //Read queue list
-            $queue = parent::show_queue();
+            $queue = $this->show_queue();
 
             //Count left jobs
             foreach ($queue as $key => $item) {
-                $left += parent::show_length($key);
+                $left += $this->show_length($key);
             }
         } while (0 < $jobs && 0 < $left && $left < $jobs);
 
@@ -151,7 +151,7 @@ class queue extends redis_queue
      */
     public function test_duration(): void
     {
-        parent::add(
+        $this->add(
             $this->process,
             [
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
@@ -161,7 +161,7 @@ class queue extends redis_queue
             60
         );
 
-        $add = parent::add(
+        $add = $this->add(
             $this->process,
             [
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
@@ -183,7 +183,7 @@ class queue extends redis_queue
     public function test_job_100(int $jobs = 100): void
     {
         for ($i = 0; $i < $jobs; ++$i) {
-            parent::add(
+            $this->add(
                 $this->process,
                 [
                     'rand' => hash('sha256', uniqid(mt_rand(), true)),
@@ -209,7 +209,7 @@ class queue extends redis_queue
     public function test_job_1000(int $jobs = 1000): void
     {
         for ($i = 0; $i < $jobs; ++$i) {
-            parent::add(
+            $this->add(
                 $this->process,
                 [
                     'rand' => hash('sha256', uniqid(mt_rand(), true)),
@@ -235,7 +235,7 @@ class queue extends redis_queue
     public function test_job_10000(int $jobs = 10000): void
     {
         for ($i = 0; $i < $jobs; ++$i) {
-            parent::add(
+            $this->add(
                 $this->process,
                 [
                     'rand' => hash('sha256', uniqid(mt_rand(), true)),
