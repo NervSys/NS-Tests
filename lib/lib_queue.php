@@ -13,7 +13,7 @@ use ext\redis_queue;
 
 class lib_queue extends redis_queue
 {
-    public $tz = 'root,child';
+    public $tz = 'start,child';
 
     /**
      * lib_queue constructor.

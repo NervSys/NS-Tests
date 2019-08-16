@@ -35,7 +35,7 @@ class queue extends redis_queue
     ];
 
     private $process  = 'app/tests/queue-process';
-    private $root_cmd = 'app/tests/lib/lib_queue-root';
+    private $root_cmd = 'app/tests/lib/lib_queue-start';
 
     /**
      * queue constructor.
@@ -48,7 +48,7 @@ class queue extends redis_queue
         \ext\mpc::new()
             ->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe'])
             ->add(['cmd' => $this->get_app_cmd($this->root_cmd)])
-            ->commit(1, false);
+            ->go(false, 1);
 
         //Init queue instance
         $this->connect();

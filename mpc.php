@@ -76,7 +76,7 @@ class mpc extends base_mpc
 
         $mpc = parent::config(['php_exe' => self::PHP_EXE]);
 
-        $result = $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item]])->commit();
+        $result = $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item]])->go();
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
         echo PHP_EOL;
@@ -100,7 +100,7 @@ class mpc extends base_mpc
             $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item . $i]]);
         }
 
-        $result = $mpc->commit();
+        $result = $mpc->go();
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
@@ -125,7 +125,7 @@ class mpc extends base_mpc
             $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item . $i]]);
         }
 
-        $result = $mpc->commit();
+        $result = $mpc->go();
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
@@ -143,7 +143,7 @@ class mpc extends base_mpc
 
         $mpc = parent::config(['php_exe' => self::PHP_EXE]);
 
-        $result = $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item, 'sleep' => 1]])->commit();
+        $result = $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item, 'sleep' => 1]])->go();
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
         echo PHP_EOL;
@@ -167,7 +167,7 @@ class mpc extends base_mpc
             $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item . $i, 'sleep' => 1]]);
         }
 
-        $result = $mpc->commit();
+        $result = $mpc->go();
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
@@ -192,7 +192,7 @@ class mpc extends base_mpc
             $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item . $i, 'sleep' => 1]]);
         }
 
-        $result = $mpc->commit();
+        $result = $mpc->go();
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
@@ -217,7 +217,7 @@ class mpc extends base_mpc
             $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item . $i, 'sleep' => 1]]);
         }
 
-        $result = $mpc->commit(100);
+        $result = $mpc->go(true, 100);
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
