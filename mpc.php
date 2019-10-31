@@ -21,33 +21,31 @@
 namespace app\tests;
 
 use app\tests\lib\res;
-use ext\mpc AS base_mpc;
+use ext\mpc as base_mpc;
 
 class mpc extends base_mpc
 {
-    public static $tz = [
-        'child'               => '',
-        'test_job_1'          => '',
-        'test_job_10'         => '',
-        'test_job_100'        => '',
-        'test_job_1s'         => '',
-        'test_job_10s'        => '',
-        'test_job_100s'       => '',
-        'test_job_1000s_100p' => ''
+    public $tz = [
+        'child',
+        'test_job_1',
+        'test_job_10',
+        'test_job_100',
+        'test_job_1s',
+        'test_job_10s',
+        'test_job_100s',
+        'test_job_1000s_100p'
     ];
 
     private $item  = '';
-    private $child = 'app/tests/mpc-child';
-
-    const PHP_EXE = 'D:/Programs/Serv-Me/Program/PHP/php.exe';
+    private $child = 'tests/mpc-child';
 
     /**
      * mpc constructor.
      */
     public function __construct()
     {
-        $this->child = parent::get_app_cmd($this->child);
-        $this->item  = hash('sha256', uniqid(mt_rand(), true));
+        parent::__construct();
+        $this->item = hash('sha256', uniqid(mt_rand(), true));
     }
 
     /**
@@ -58,7 +56,7 @@ class mpc extends base_mpc
      *
      * @return string
      */
-    public static function child(string $value = '', int $sleep = 0): string
+    public function child(string $value = '', int $sleep = 0): string
     {
         if (0 < $sleep) {
             sleep($sleep);
@@ -74,9 +72,7 @@ class mpc extends base_mpc
     {
         $time = microtime(true);
 
-        $mpc = parent::config(['php_exe' => self::PHP_EXE]);
-
-        $result = $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item]])->go();
+        $result = $this->add(['c' => $this->child, 'd' => ['value' => $this->item]])->go();
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
         echo PHP_EOL;
@@ -93,14 +89,13 @@ class mpc extends base_mpc
 
         $data = [];
         $jobs = 10;
-        $mpc  = parent::config(['php_exe' => self::PHP_EXE]);
 
         for ($i = 0; $i < $jobs; ++$i) {
             $data[] = $this->item . $i;
-            $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item . $i]]);
+            $this->add(['c' => $this->child, 'd' => ['value' => $this->item . $i]]);
         }
 
-        $result = $mpc->go();
+        $result = $this->go();
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
@@ -118,14 +113,13 @@ class mpc extends base_mpc
 
         $data = [];
         $jobs = 100;
-        $mpc  = parent::config(['php_exe' => self::PHP_EXE]);
 
         for ($i = 0; $i < $jobs; ++$i) {
             $data[] = $this->item . $i;
-            $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item . $i]]);
+            $this->add(['c' => $this->child, 'd' => ['value' => $this->item . $i]]);
         }
 
-        $result = $mpc->go();
+        $result = $this->go();
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
@@ -141,9 +135,7 @@ class mpc extends base_mpc
     {
         $time = microtime(true);
 
-        $mpc = parent::config(['php_exe' => self::PHP_EXE]);
-
-        $result = $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item, 'sleep' => 1]])->go();
+        $result = $this->add(['c' => $this->child, 'd' => ['value' => $this->item, 'sleep' => 1]])->go();
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
         echo PHP_EOL;
@@ -160,14 +152,13 @@ class mpc extends base_mpc
 
         $data = [];
         $jobs = 10;
-        $mpc  = parent::config(['php_exe' => self::PHP_EXE]);
 
         for ($i = 0; $i < $jobs; ++$i) {
             $data[] = $this->item . $i;
-            $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item . $i, 'sleep' => 1]]);
+            $this->add(['c' => $this->child, 'd' => ['value' => $this->item . $i, 'sleep' => 1]]);
         }
 
-        $result = $mpc->go();
+        $result = $this->go();
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
@@ -185,14 +176,13 @@ class mpc extends base_mpc
 
         $data = [];
         $jobs = 100;
-        $mpc  = parent::config(['php_exe' => self::PHP_EXE]);
 
         for ($i = 0; $i < $jobs; ++$i) {
             $data[] = $this->item . $i;
-            $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item . $i, 'sleep' => 1]]);
+            $this->add(['c' => $this->child, 'd' => ['value' => $this->item . $i, 'sleep' => 1]]);
         }
 
-        $result = $mpc->go();
+        $result = $this->go();
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
@@ -210,14 +200,13 @@ class mpc extends base_mpc
 
         $data = [];
         $jobs = 1000;
-        $mpc  = parent::config(['php_exe' => self::PHP_EXE]);
 
         for ($i = 0; $i < $jobs; ++$i) {
             $data[] = $this->item . $i;
-            $mpc->add(['cmd' => $this->child, 'data' => ['value' => $this->item . $i, 'sleep' => 1]]);
+            $this->add(['c' => $this->child, 'd' => ['value' => $this->item . $i, 'sleep' => 1]]);
         }
 
-        $result = $mpc->go(true, 100);
+        $result = $this->go(true, 100);
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 

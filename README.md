@@ -1,6 +1,6 @@
 # Nervsys test suites
 
-Extension test suites for Nervsys 7.2.20
+Extension test suites for Nervsys 7.4.0
 
 
 ## Usage

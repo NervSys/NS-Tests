@@ -20,21 +20,21 @@
 
 namespace app\tests;
 
-use ext\redis_cache;
 use app\tests\lib\res;
+use ext\redis_cache;
 
 class cache extends redis_cache
 {
-    public static $tz = [
-        'test_set'             => '',
-        'test_get'             => '',
-        'test_del_get'         => '',
-        'test_set_persist'     => '',
-        'test_get_persist'     => '',
-        'test_del_get_persist' => '',
-        'test_set_life'        => '',
-        'test_get_life'        => '',
-        'test_get_life_over'   => ''
+    public $tz = [
+        'test_set',
+        'test_get',
+        'test_del_get',
+        'test_set_persist',
+        'test_get_persist',
+        'test_del_get_persist',
+        'test_set_life',
+        'test_get_life',
+        'test_get_life_over'
     ];
 
     private $redis_cache;
@@ -47,6 +47,8 @@ class cache extends redis_cache
      */
     public function __construct()
     {
+        parent::__construct();
+
         $this->cache_data = [
             mt_rand(),
             mt_rand(),
@@ -60,8 +62,7 @@ class cache extends redis_cache
             hash('sha256', uniqid(mt_rand(), true))
         ];
 
-        $this->redis_cache = parent::connect();
-        $this->redis_cache->del($this->cache_key);
+        $this->del($this->cache_key);
     }
 
     /**
@@ -69,7 +70,7 @@ class cache extends redis_cache
      */
     public function test_set(): void
     {
-        $set = $this->redis_cache->set($this->cache_key, $this->cache_data, 600);
+        $set = $this->set($this->cache_key, $this->cache_data, 600);
         res::chk_eq('set', [$set, true]);
     }
 
@@ -78,7 +79,7 @@ class cache extends redis_cache
      */
     public function test_get(): void
     {
-        $get = $this->redis_cache->get($this->cache_key);
+        $get = $this->get($this->cache_key);
         res::chk_eq('get', [$get, $this->cache_data]);
     }
 
@@ -87,9 +88,9 @@ class cache extends redis_cache
      */
     public function test_del_get(): void
     {
-        $this->redis_cache->del($this->cache_key);
+        $this->del($this->cache_key);
 
-        $get = $this->redis_cache->get($this->cache_key);
+        $get = $this->get($this->cache_key);
         res::chk_eq('del_get', [$get, []]);
     }
 
@@ -98,7 +99,7 @@ class cache extends redis_cache
      */
     public function test_set_persist(): void
     {
-        $set = $this->redis_cache->set($this->cache_key, $this->cache_data, 0);
+        $set = $this->set($this->cache_key, $this->cache_data, 0);
         res::chk_eq('set_persist', [$set, true]);
     }
 
@@ -107,7 +108,7 @@ class cache extends redis_cache
      */
     public function test_get_persist(): void
     {
-        $get = $this->redis_cache->get($this->cache_key);
+        $get = $this->get($this->cache_key);
         res::chk_eq('get_persist', [$get, $this->cache_data]);
     }
 
@@ -116,9 +117,9 @@ class cache extends redis_cache
      */
     public function test_del_get_persist(): void
     {
-        $this->redis_cache->del($this->cache_key);
+        $this->del($this->cache_key);
 
-        $get = $this->redis_cache->get($this->cache_key);
+        $get = $this->get($this->cache_key);
         res::chk_eq('del_get_persist', [$get, []]);
     }
 
@@ -127,7 +128,7 @@ class cache extends redis_cache
      */
     public function test_set_life(): void
     {
-        $set = $this->redis_cache->set($this->cache_key, $this->cache_data, 3);
+        $set = $this->set($this->cache_key, $this->cache_data, 3);
         res::chk_eq('set_life', [$set, true]);
     }
 
@@ -136,7 +137,7 @@ class cache extends redis_cache
      */
     public function test_get_life(): void
     {
-        $get = $this->redis_cache->get($this->cache_key);
+        $get = $this->get($this->cache_key);
         res::chk_eq('get_life', [$get, $this->cache_data]);
     }
 
@@ -147,7 +148,7 @@ class cache extends redis_cache
     {
         sleep(3);
 
-        $get = $this->redis_cache->get($this->cache_key);
+        $get = $this->get($this->cache_key);
         res::chk_eq('get_life_over', [$get, []]);
     }
 }

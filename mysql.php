@@ -20,19 +20,20 @@
 
 namespace app\tests;
 
-use ext\pdo_mysql;
 use app\tests\lib\res;
-use core\handler\factory;
+use ext\core;
+use ext\factory;
+use ext\pdo_mysql;
 
 class mysql extends factory
 {
-    public static $tz = [
-        'insert' => '',
-        'incr'   => 'test_id',
-        'update' => 'test_id',
-        'select' => 'test_id',
-        'check'  => 'test_changes,test_data',
-        'delete' => 'test_id'
+    public $tz = [
+        'insert',
+        'incr',
+        'update',
+        'select',
+        'check',
+        'delete'
     ];
 
     private $mysql = null;
@@ -54,7 +55,7 @@ class mysql extends factory
               INDEX (`test_count`)
             ) ENGINE=MYISAM DEFAULT CHARSET=utf8mb4 COMMENT "Test Table";';
 
-        $this->mysql = pdo_mysql::new()->config(['db' => 'test'])->connect();
+        $this->mysql = pdo_mysql::new(['db' => 'test']);
         $this->mysql->exec($sql);
     }
 
@@ -81,7 +82,7 @@ class mysql extends factory
             res::chk_eq('insert: ' . $i, [$res, true]);
         }
 
-        parent::$data['test_id'] = &$test_id;
+        core::add_data('test_id', $test_id);
     }
 
     /**
@@ -139,7 +140,7 @@ class mysql extends factory
             ++$i;
         }
 
-        parent::$data['test_changes'] = &$changes;
+        core::add_data('test_changes', $changes);
     }
 
     /**
@@ -149,12 +150,14 @@ class mysql extends factory
      */
     public function select(array $test_id): void
     {
-        parent::$data['test_data'] = $res = $this->mysql
+        $res = $this->mysql
             ->select('ns_test')
             ->field('test_id', 'test_hash', 'test_text', 'test_count')
             ->where([['test_id', 'IN', $test_id]])
             ->order(['test_time' => 'ASC'])
             ->fetch();
+
+        core::add_data('test_data', $res);
 
         res::chk_eq('select', [count($res), count($test_id)]);
     }

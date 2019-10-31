@@ -21,15 +21,16 @@
 namespace app\tests;
 
 use app\tests\lib\res;
-use ext\crypt AS base_crypt;
+use ext\crypt as base_crypt;
+use ext\keygen;
 
 class crypt extends base_crypt
 {
-    public static $tz = [
-        'test_pwd'       => '',
-        'test_crypt_aes' => '',
-        'test_crypt_rsa' => '',
-        'test_sign'      => ''
+    public $tz = [
+        'test_pwd',
+        'test_crypt_aes',
+        'test_crypt_rsa',
+        'test_sign'
     ];
 
     private $crypt;
@@ -43,10 +44,10 @@ class crypt extends base_crypt
      */
     public function __construct()
     {
-        $this->crypt = parent::config(['conf' => 'D:/Programs/Serv-Me/Program/PHP/extras/ssl/openssl.cnf']);
+        parent::__construct(keygen::class, 'D:/Programs/Serv-Me/Program/PHP/extras/ssl/openssl.cnf');
 
-        $this->aes_key  = $this->crypt->get_key();
-        $this->rsa_keys = $this->crypt->rsa_keys($this->aes_key);
+        $this->aes_key  = $this->get_key();
+        $this->rsa_keys = $this->rsa_keys($this->aes_key);
 
         $this->string = hash('sha256', uniqid(mt_rand(), true));
     }
@@ -56,8 +57,8 @@ class crypt extends base_crypt
      */
     public function test_pwd(): void
     {
-        $hash    = $this->crypt->hash_pwd($this->string, $this->aes_key);
-        $pwd_chk = $this->crypt->check_pwd($this->string, $this->aes_key, $hash);
+        $hash    = $this->hash_pwd($this->string, $this->aes_key);
+        $pwd_chk = $this->check_pwd($this->string, $this->aes_key, $hash);
         res::chk_eq('hash_pwd/check_pwd', [$pwd_chk, true]);
     }
 
@@ -66,8 +67,8 @@ class crypt extends base_crypt
      */
     public function test_crypt_aes(): void
     {
-        $enc = $this->crypt->encrypt($this->string, $this->aes_key);
-        $dec = $this->crypt->decrypt($enc, $this->aes_key);
+        $enc = $this->encrypt($this->string, $this->aes_key);
+        $dec = $this->decrypt($enc, $this->aes_key);
         res::chk_eq('encrypt/decrypt', [$this->string, $dec]);
     }
 
@@ -76,12 +77,12 @@ class crypt extends base_crypt
      */
     public function test_crypt_rsa(): void
     {
-        $enc = $this->crypt->rsa_encrypt($this->string, $this->rsa_keys['public']);
-        $dec = $this->crypt->rsa_decrypt($enc, $this->rsa_keys['private']);
+        $enc = $this->rsa_encrypt($this->string, $this->rsa_keys['public']);
+        $dec = $this->rsa_decrypt($enc, $this->rsa_keys['private']);
         res::chk_eq('rsa_encrypt(pub)/rsa_decrypt(pri)', [$this->string, $dec]);
 
-        $enc = $this->crypt->rsa_encrypt($this->string, $this->rsa_keys['private']);
-        $dec = $this->crypt->rsa_decrypt($enc, $this->rsa_keys['public']);
+        $enc = $this->rsa_encrypt($this->string, $this->rsa_keys['private']);
+        $dec = $this->rsa_decrypt($enc, $this->rsa_keys['public']);
         res::chk_eq('rsa_encrypt(pri)/rsa_decrypt(pub)', [$this->string, $dec]);
     }
 
@@ -90,16 +91,16 @@ class crypt extends base_crypt
      */
     public function test_sign(): void
     {
-        $enc = $this->crypt->sign($this->string);
-        $dec = $this->crypt->verify($enc);
+        $enc = $this->sign($this->string);
+        $dec = $this->verify($enc);
         res::chk_eq('sign/verify', [$this->string, $dec]);
 
-        $enc = $this->crypt->sign($this->string, $this->rsa_keys['public']);
-        $dec = $this->crypt->verify($enc, $this->rsa_keys['private']);
+        $enc = $this->sign($this->string, $this->rsa_keys['public']);
+        $dec = $this->verify($enc, $this->rsa_keys['private']);
         res::chk_eq('sign(pub)/verify(pri)', [$this->string, $dec]);
 
-        $enc = $this->crypt->sign($this->string, $this->rsa_keys['private']);
-        $dec = $this->crypt->verify($enc, $this->rsa_keys['public']);
+        $enc = $this->sign($this->string, $this->rsa_keys['private']);
+        $dec = $this->verify($enc, $this->rsa_keys['public']);
         res::chk_eq('sign(pri)/verify(pub)', [$this->string, $dec]);
     }
 }

@@ -20,38 +20,38 @@
 
 namespace app\tests;
 
-use ext\redis_queue;
 use app\tests\lib\res;
+use core\lib\stc\factory;
+use core\lib\std\log;
+use ext\redis_queue;
 
 class queue extends redis_queue
 {
-    public static $tz = [
-        'test_add'       => '',
-        'test_fail'      => '',
-        'test_duration'  => '',
-        'test_job_100'   => '',
-        'test_job_1000'  => '',
-        'test_job_10000' => ''
+    public $tz = [
+        'test_add',
+        'test_fail',
+        'test_unique',
+        'test_job_100',
+        'test_job_1000',
+        'test_job_10000',
+        'test_delay_10'
     ];
 
-    private $process  = 'app/tests/queue-process';
-    private $root_cmd = 'app/tests/lib/lib_queue-start';
+    private $process  = '/' . queue::class . '-process';
+    private $root_cmd = 'tests/lib/lib_queue-start';
 
     /**
      * queue constructor.
      */
     public function __construct()
     {
-        $this->process = $this->get_app_cmd($this->process);
-
         //Start root process
         \ext\mpc::new()
-            ->config(['php_exe' => 'D:/Programs/Serv-Me/Program/PHP/php.exe'])
-            ->add(['cmd' => $this->get_app_cmd($this->root_cmd)])
+            ->add(['c' => $this->root_cmd])
             ->go(false, 1);
 
         //Init queue instance
-        $this->connect();
+        parent::__construct();
     }
 
     /**
@@ -64,6 +64,10 @@ class queue extends redis_queue
      */
     public function process(string $rand, bool $bool): bool
     {
+        if (10 === strlen($rand)) {
+            factory::build(log::class)->alert('delay', [['time' => date('Y-m-d H:i:s', $rand)]]);
+        }
+
         unset($rand);
         return $bool;
     }
@@ -147,9 +151,9 @@ class queue extends redis_queue
     }
 
     /**
-     * Test add 1 job
+     * Test add 1 unique job
      */
-    public function test_duration(): void
+    public function test_unique(): void
     {
         $this->add(
             $this->process,
@@ -157,7 +161,8 @@ class queue extends redis_queue
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
                 'bool' => true
             ],
-            'duration',
+            'unique',
+            self::TYPE_UNIQUE,
             60
         );
 
@@ -167,11 +172,12 @@ class queue extends redis_queue
                 'rand' => hash('sha256', uniqid(mt_rand(), true)),
                 'bool' => true
             ],
-            'duration',
+            'unique',
+            self::TYPE_UNIQUE,
             60
         );
 
-        res::chk_eq('add 1 job in duration', [$add, -1]);
+        res::chk_eq('add 1 unique job', [$add, -1]);
         echo PHP_EOL;
     }
 
@@ -243,6 +249,37 @@ class queue extends redis_queue
                 ],
                 'test_' . mt_rand(1, 10)
             );
+        }
+
+        $time = microtime(true);
+
+        res::chk_eq($jobs . ' jobs done', [$this->chk_job(), 0]);
+        echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
+        echo PHP_EOL;
+        echo PHP_EOL;
+    }
+
+    /**
+     * Test 10000 jobs
+     *
+     * @param int $jobs
+     */
+    public function test_delay_10(int $jobs = 10): void
+    {
+        factory::build(log::class)->alert('delay', [['start' => time()]]);
+        for ($i = 0; $i < $jobs; ++$i) {
+            $this->add(
+                $this->process,
+                [
+                    'rand' => time() + 12,
+                    'bool' => true
+                ],
+                'test_' . mt_rand(1, 10),
+                parent::TYPE_DELAY,
+                12
+            );
+
+            sleep(5);
         }
 
         $time = microtime(true);
