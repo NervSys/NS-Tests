@@ -55,7 +55,7 @@ class mysql extends factory
               INDEX (`test_count`)
             ) ENGINE=MYISAM DEFAULT CHARSET=utf8mb4 COMMENT "Test Table";';
 
-        $this->mysql = pdo_mysql::new(['db' => 'test']);
+        $this->mysql = pdo_mysql::create(['db' => 'test']);
         $this->mysql->exec($sql);
     }
 

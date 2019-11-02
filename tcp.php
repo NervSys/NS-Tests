@@ -35,7 +35,7 @@ class tcp
     public function server(string $address = 'tcp://0.0.0.0:8000'): void
     {
         $clients = [];
-        $stream  = socket::new('server')->bind($address)->create();
+        $stream  = socket::new('server')->bind($address)->start();
 
         while (true) {
             $read = $stream->listen($clients);
@@ -83,7 +83,7 @@ class tcp
      */
     public function client(string $address = 'tcp://127.0.0.1:8000'): void
     {
-        $stream = socket::new('client')->bind($address)->create();
+        $stream = socket::new('client')->bind($address)->start();
         $input  = fopen('php://stdin', 'r');
 
         while (true) {

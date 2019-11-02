@@ -35,7 +35,7 @@ class http
     public function server(string $address = 'tcp://0.0.0.0:80'): void
     {
         $clients = [];
-        $stream  = socket::new('server')->bind($address)->create();
+        $stream  = socket::new('server')->bind($address)->start();
 
         while (true) {
             $read = $stream->listen($clients);

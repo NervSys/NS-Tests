@@ -35,7 +35,7 @@ class udp
     public function server(string $address = 'udp://0.0.0.0:8000'): void
     {
         $clients = [];
-        $stream  = socket::new('server')->bind($address)->create();
+        $stream  = socket::new('server')->bind($address)->start();
 
         while (true) {
             if (0 === $stream->listen($clients)) {
@@ -59,7 +59,7 @@ class udp
      */
     public function client(string $address = 'udp://127.0.0.1:8000'): void
     {
-        $stream = socket::new('client')->bind($address)->create();
+        $stream = socket::new('client')->bind($address)->start();
         $input  = fopen('php://stdin', 'r');
 
         while (true) {
@@ -89,6 +89,6 @@ class udp
             ->msg('UDP Broadcasting: Hello World!')
             ->bind($address)
             ->timeout(2)
-            ->create();
+            ->start();
     }
 }
