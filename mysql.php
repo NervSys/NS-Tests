@@ -152,10 +152,10 @@ class mysql extends factory
     {
         $res = $this->mysql
             ->select('ns_test')
-            ->field('test_id', 'test_hash', 'test_text', 'test_count')
+            ->fields('test_id', 'test_hash', 'test_text', 'test_count')
             ->where([['test_id', 'IN', $test_id]])
             ->order(['test_time' => 'ASC'])
-            ->fetch();
+            ->fetch_all();
 
         core::add_data('test_data', $res);
 
