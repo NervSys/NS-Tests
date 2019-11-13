@@ -21,7 +21,7 @@
 namespace app\tests;
 
 use app\tests\lib\res;
-use ext\redis_cache;
+use ext\cache as redis_cache;
 
 class cache extends redis_cache
 {
@@ -36,8 +36,6 @@ class cache extends redis_cache
         'test_get_life',
         'test_get_life_over'
     ];
-
-    private $redis_cache;
 
     private $cache_data = [];
     private $cache_key  = 'test';

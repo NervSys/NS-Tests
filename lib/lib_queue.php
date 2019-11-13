@@ -9,9 +9,9 @@
 
 namespace app\tests\lib;
 
-use ext\redis_queue;
+use ext\queue;
 
-class lib_queue extends redis_queue
+class lib_queue extends queue
 {
     public $tz = [
         'start',

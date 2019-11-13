@@ -23,7 +23,7 @@ namespace app\tests;
 use app\tests\lib\res;
 use core\lib\stc\factory;
 use core\lib\std\log;
-use ext\redis_queue;
+use ext\queue as redis_queue;
 
 class queue extends redis_queue
 {

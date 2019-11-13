@@ -23,7 +23,7 @@ namespace app\tests;
 use app\tests\lib\res;
 use ext\core;
 use ext\factory;
-use ext\pdo_mysql;
+use ext\mysql as pdo_mysql;
 
 class mysql extends factory
 {
@@ -55,7 +55,7 @@ class mysql extends factory
               INDEX (`test_count`)
             ) ENGINE=MYISAM DEFAULT CHARSET=utf8mb4 COMMENT "Test Table";';
 
-        $this->mysql = pdo_mysql::create(['db' => 'test']);
+        $this->mysql = pdo_mysql::new(['db' => 'test']);
         $this->mysql->exec($sql);
     }
 
