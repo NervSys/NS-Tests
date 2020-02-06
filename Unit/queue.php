@@ -18,12 +18,13 @@
  * limitations under the License.
  */
 
-namespace app\tests;
+namespace app\UnitTest;
 
-use app\tests\lib\res;
+use app\UnitTest\Lib\res;
 use core\lib\stc\factory;
 use core\lib\std\log;
 use ext\queue as redis_queue;
+use ext\redis;
 
 class queue extends redis_queue
 {
@@ -38,7 +39,7 @@ class queue extends redis_queue
     ];
 
     private $process  = '/' . queue::class . '-process';
-    private $root_cmd = 'tests/lib/lib_queue-start';
+    private $root_cmd = 'tests/lib/lib_queue-go';
 
     /**
      * queue constructor.
@@ -51,7 +52,7 @@ class queue extends redis_queue
             ->go(false, 1);
 
         //Init queue instance
-        parent::__construct();
+        parent::__construct(redis::new()->connect());
     }
 
     /**
@@ -86,7 +87,7 @@ class queue extends redis_queue
             'test'
         );
 
-        res::chk_eq('add 1 job', [$add, 1]);
+        res::chk('add 1 job', [$add, 1]);
     }
 
     /**
@@ -94,7 +95,7 @@ class queue extends redis_queue
      */
     public function test_fail(): void
     {
-        $left = $this->show_fail(0, 1);
+        $left = $this->show_logs('failed');;
 
         $this->add(
             $this->process,
@@ -107,9 +108,9 @@ class queue extends redis_queue
 
         while (0 < $this->chk_job()) ;
 
-        $remain = $this->show_fail(0, 1);
+        $remain = $this->show_logs('failed');
 
-        res::chk_eq('add 1 fail job', [$remain['len'] - $left['len'], 1]);
+        res::chk('add 1 fail job', [$remain['len'] - $left['len'], 1]);
     }
 
     /**
@@ -177,7 +178,7 @@ class queue extends redis_queue
             60
         );
 
-        res::chk_eq('add 1 unique job', [$add, -1]);
+        res::chk('add 1 unique job', [$add, -1]);
         echo PHP_EOL;
     }
 
@@ -201,7 +202,7 @@ class queue extends redis_queue
 
         $time = microtime(true);
 
-        res::chk_eq($jobs . ' jobs done', [$this->chk_job(), 0]);
+        res::chk($jobs . ' jobs done', [$this->chk_job(), 0]);
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
         echo PHP_EOL;
         echo PHP_EOL;
@@ -227,7 +228,7 @@ class queue extends redis_queue
 
         $time = microtime(true);
 
-        res::chk_eq($jobs . ' jobs done', [$this->chk_job(), 0]);
+        res::chk($jobs . ' jobs done', [$this->chk_job(), 0]);
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
         echo PHP_EOL;
         echo PHP_EOL;
@@ -253,7 +254,7 @@ class queue extends redis_queue
 
         $time = microtime(true);
 
-        res::chk_eq($jobs . ' jobs done', [$this->chk_job(), 0]);
+        res::chk($jobs . ' jobs done', [$this->chk_job(), 0]);
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
         echo PHP_EOL;
         echo PHP_EOL;
@@ -284,7 +285,7 @@ class queue extends redis_queue
 
         $time = microtime(true);
 
-        res::chk_eq($jobs . ' jobs done', [$this->chk_job(), 0]);
+        res::chk($jobs . ' jobs done', [$this->chk_job(), 0]);
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
         echo PHP_EOL;
         echo PHP_EOL;

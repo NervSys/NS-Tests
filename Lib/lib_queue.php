@@ -7,14 +7,20 @@
  * Note: lib_queue.php
  */
 
-namespace app\tests\lib;
+namespace app\UnitTest\Lib;
 
 use ext\queue;
+use ext\redis;
 
 class lib_queue extends queue
 {
     public $tz = [
-        'start',
+        'go',
         'unit'
     ];
+
+    public function __construct()
+    {
+        parent::__construct(redis::new()->connect());
+    }
 }

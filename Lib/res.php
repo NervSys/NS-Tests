@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Nervsys test suites
+ * Nervsys UnitTest
  *
- * Copyright 2016-2019 秋水之冰 <27206617@qq.com>
+ * Copyright 2016-2020 秋水之冰 <27206617@qq.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,13 @@
  * limitations under the License.
  */
 
-namespace app\tests\lib;
+namespace app\UnitTest\Lib;
 
+/**
+ * Class res
+ *
+ * @package app\UnitTest\Lib
+ */
 class res
 {
     /**
@@ -28,9 +33,9 @@ class res
      * @param string $name
      * @param array  $data
      */
-    public static function chk_eq(string $name, array $data): void
+    public static function chk(string $name, array $data): void
     {
-        echo get_called_class() . ' [' . $name . ']: ';
+        echo '[' . $name . ']: ' . "\t";
 
         if (is_object($data[0])) {
             $data[0] = (array)$data[0];
@@ -52,40 +57,6 @@ class res
 
         echo $data[0] !== $data[1]
             ? 'Failed! (' . (string)$data[0] . ' !== ' . (string)$data[1] . ')'
-            : 'PASSED!';
-
-        echo PHP_EOL;
-    }
-
-    /**
-     * Check greater than
-     *
-     * @param string $name
-     * @param array  $data
-     */
-    public static function chk_gt(string $name, array $data): void
-    {
-        echo get_called_class() . ' [' . $name . ']: ';
-
-        echo $data[0] <= $data[1]
-            ? 'Failed! (' . (string)$data[0] . ' <= ' . (string)$data[1] . ')'
-            : 'PASSED!';
-
-        echo PHP_EOL;
-    }
-
-    /**
-     * Check less than
-     *
-     * @param string $name
-     * @param array  $data
-     */
-    public static function chk_lt(string $name, array $data): void
-    {
-        echo get_called_class() . ' [' . $name . ']: ';
-
-        echo $data[0] >= $data[1]
-            ? 'Failed! (' . (string)$data[0] . ' >= ' . (string)$data[1] . ')'
             : 'PASSED!';
 
         echo PHP_EOL;

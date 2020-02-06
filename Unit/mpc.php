@@ -18,9 +18,9 @@
  * limitations under the License.
  */
 
-namespace app\tests;
+namespace app\UnitTest;
 
-use app\tests\lib\res;
+use app\UnitTest\Lib\res;
 use ext\mpc as base_mpc;
 
 class mpc extends base_mpc
@@ -76,7 +76,7 @@ class mpc extends base_mpc
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
         echo PHP_EOL;
-        res::chk_eq('1 job', [$result[0]['data'], $this->item]);
+        res::chk('1 job', [$result[0]['data'], $this->item]);
         echo PHP_EOL;
     }
 
@@ -100,7 +100,7 @@ class mpc extends base_mpc
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
         echo PHP_EOL;
-        res::chk_eq('10 jobs', [array_column($result, 'data'), $data]);
+        res::chk('10 jobs', [array_column($result, 'data'), $data]);
         echo PHP_EOL;
     }
 
@@ -124,7 +124,7 @@ class mpc extends base_mpc
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
         echo PHP_EOL;
-        res::chk_eq('100 jobs', [array_column($result, 'data'), $data]);
+        res::chk('100 jobs', [array_column($result, 'data'), $data]);
         echo PHP_EOL;
     }
 
@@ -139,7 +139,7 @@ class mpc extends base_mpc
 
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
         echo PHP_EOL;
-        res::chk_eq('1 sleep job', [$result[0]['data'], $this->item]);
+        res::chk('1 sleep job', [$result[0]['data'], $this->item]);
         echo PHP_EOL;
     }
 
@@ -163,7 +163,7 @@ class mpc extends base_mpc
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
         echo PHP_EOL;
-        res::chk_eq('10 sleep jobs', [array_column($result, 'data'), $data]);
+        res::chk('10 sleep jobs', [array_column($result, 'data'), $data]);
         echo PHP_EOL;
     }
 
@@ -187,7 +187,7 @@ class mpc extends base_mpc
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
         echo PHP_EOL;
-        res::chk_eq('100 sleep jobs', [array_column($result, 'data'), $data]);
+        res::chk('100 sleep jobs', [array_column($result, 'data'), $data]);
         echo PHP_EOL;
     }
 
@@ -211,7 +211,7 @@ class mpc extends base_mpc
         echo 'Time Taken: ' . round(microtime(true) - $time, 4) . 's';
 
         echo PHP_EOL;
-        res::chk_eq('1000 sleep jobs/100 processes', [array_column($result, 'data'), $data]);
+        res::chk('1000 sleep jobs/100 processes', [array_column($result, 'data'), $data]);
         echo PHP_EOL;
     }
 }
